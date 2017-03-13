@@ -7,9 +7,10 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.dataservicios.ttauditibk.Model.Media;
+
 import com.dataservicios.ttauditibk.Repositories.MediaRepo;
 import com.dataservicios.ttauditibk.app.AppController;
+import com.dataservicios.ttauditibk.model.Media;
 import com.dataservicios.ttauditibk.util.AuditUtil;
 import com.dataservicios.ttauditibk.util.Connectivity;
 

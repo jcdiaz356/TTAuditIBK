@@ -22,9 +22,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.dataservicios.ttauditibk.Model.NavDrawerItem;
-import com.dataservicios.ttauditibk.Repositories.MediaRepo;
+
 import com.dataservicios.ttauditibk.adapter.NavDrawerListAdapter;
+import com.dataservicios.ttauditibk.model.NavDrawerItem;
 import com.dataservicios.ttauditibk.util.SessionManager;
 
 import java.io.File;
@@ -36,7 +36,6 @@ import java.util.HashMap;
  * Created by usuario on 26/11/2014.
  */
 public class BaseActivity extends Activity {
-    private static final String LOG_TAG = BaseActivity.class.getSimpleName();
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -49,45 +48,60 @@ public class BaseActivity extends Activity {
     private TypedArray navMenuIcons;
     private ArrayList<NavDrawerItem> navDrawerItems;
     private NavDrawerListAdapter adapter;
-    private SessionManager session;
-    private String email_user, id_user, name_user;
 
     private String pathFile ;
     private File filePath;
 
     final Activity MyActivity = this;
 
-    private AlbumStorageDirFactory mAlbumStorageDirFactory = null;
+    private SessionManager session;
+    private String email_user, id_user, name_user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_paneladmin);
 
-        session = new SessionManager(getApplicationContext());
 
+        session = new SessionManager(getApplicationContext());
         HashMap<String, String> user = session.getUserDetails();
+        // name
         name_user = user.get(SessionManager.KEY_NAME);
+        // email
         email_user = user.get(SessionManager.KEY_EMAIL);
+        // id
         id_user = user.get(SessionManager.KEY_ID_USER);
+
+
         mTitle = mDrawerTitle = getTitle();
+
         // load slide menu items
         navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
+        // nav drawer icons from resources
         navMenuIcons = getResources().obtainTypedArray(R.array.nav_drawer_icons);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
         navDrawerItems = new ArrayList<NavDrawerItem>();
-
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId( 0, -1)));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId( 1 , -1)));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId( 2 , -1)));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId( 3 , -1), true , "0"));
-
+        // adding nav drawer items to array
+        // Home
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
+        // Find People
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
+        // Photos
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
+        // Photos
+        //navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(3, -1)));
+        // Communities, Will add a counter here
+        //navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1), true, "22"));
+        // Pages
+        //navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
+        // What's hot, We  will add a counter here
+        //navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1), true, "50+"));
+        // Recycle the typed array
         navMenuIcons.recycle();
         mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
         // setting the nav drawer list adapter
-        adapter = new NavDrawerListAdapter(getApplicationContext(),navDrawerItems);
+        adapter = new NavDrawerListAdapter(getApplicationContext(), navDrawerItems);
         mDrawerList.setAdapter(adapter);
         // enabling action bar app icon and behaving it as toggle button
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -105,19 +119,7 @@ public class BaseActivity extends Activity {
             }
 
             public void onDrawerOpened(View drawerView) {
-
-
                 getActionBar().setTitle(mDrawerTitle);
-                Log.i(LOG_TAG, String.valueOf(navDrawerItems.get(3).getCount() )) ;
-
-                MediaRepo mr = new MediaRepo(MyActivity);
-                long Total = mr.getAllMedias().size();
-
-                navDrawerItems.get(3).setCount(String.valueOf(Total));
-                adapter.notifyDataSetChanged();
-                //notifyDataSetChanged();
-
-
                 // calling onPrepareOptionsMenu() to hide action bar icons
                 invalidateOptionsMenu();
             }
@@ -133,8 +135,8 @@ public class BaseActivity extends Activity {
     /**
      * Slide menu item click listener
      * */
-    private class SlideMenuClickListener implements  ListView.OnItemClickListener
-    {
+    private class SlideMenuClickListener implements
+            ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position,
                                 long id) {
@@ -152,18 +154,21 @@ public class BaseActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // toggle nav drawer on selecting action bar app icon/title
-        // toggle nav drawer on selecting action bar app icon/title
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
         // Handle action bar actions click
         switch (item.getItemId()) {
             case R.id.action_change_password:
-                Log.i("Hola:", "sdfsdf");
+                Log.i("Hola:","sdfsdf");
 
                 return true;
-            default:
-                return super.onOptionsItemSelected(item);
+            case R.id.action_about:
+                Intent intent = new Intent(MyActivity,About.class);
+                startActivity(intent);
+                //finish();
+                return true;
+
 
             case R.id.action_salir:
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -180,6 +185,7 @@ public class BaseActivity extends Activity {
                                 //for api 16+ use finishAffinity(); and for api <16 use ActivityCompat.finishAffinity(this); (with import import android.support.v4.app.ActivityCompat)
                                 ActivityCompat.finishAffinity(MyActivity);
                                 break;
+
                             case DialogInterface.BUTTON_NEGATIVE:
                                 break;
                         }
@@ -197,12 +203,10 @@ public class BaseActivity extends Activity {
 
                 return true;
 
+            default:
+                return super.onOptionsItemSelected(item);
 
-            case R.id.action_about:
-                Intent intent = new Intent(MyActivity,About.class);
-                startActivity(intent);
-                //finish();
-                return true;
+
         }
     }
     /***
@@ -214,15 +218,6 @@ public class BaseActivity extends Activity {
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
         //menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onMenuOpened(int featureId, Menu menu) {
-
-        Log.i(LOG_TAG,"onMenuOpened") ;
-        return super.onMenuOpened(featureId, menu);
-
-
     }
 
     /**
@@ -240,7 +235,8 @@ public class BaseActivity extends Activity {
                 break;
 
             case 1:
-
+//                fragment = new CheckingFragment();
+//                break;
                 pathFile = Environment.getExternalStorageDirectory().toString()+"/Pictures/" + getAlbunNameTemp()  ;
 
                 //File filePath = new File(pathFile);
@@ -258,9 +254,10 @@ public class BaseActivity extends Activity {
 
                 break;
             case 2:
-                //fragment = new GraficosFragment();
-                //fragment = new PhotosFragment();
-
+//                fragment = new GraficosFragment();
+//                //fragment = new PhotosFragment();
+//                break;
+                //String pathFile = Environment.getExternalStorageDirectory().toString()+"/Pictures/" + getAlbunNameTemp()  ;
                 pathFile = Environment.getExternalStorageDirectory().toString()+"/Pictures/" + getAlbunNameBackup()  ;
 
                 //File filePath = new File(pathFile);
@@ -275,14 +272,13 @@ public class BaseActivity extends Activity {
                 } else {
                     Toast.makeText(MyActivity,"El directorio no existe, no hay backup de imágenes", Toast.LENGTH_LONG).show();
                 }
+
                 break;
             case 3:
                 //fragment = new CommunityFragment();
-                Intent intent;
-                intent = new Intent(MyActivity, RegistroMedia.class);
-                //intent.putExtras(argRuta);
-                startActivity(intent);
-                break;
+                //String pathFile = Environment.getExternalStorageDirectory().toString()+"/Pictures/" + getAlbunNameBackup()  ;
+
+
             case 4:
                 //fragment = new PagesFragment();
                 break;
@@ -335,8 +331,6 @@ public class BaseActivity extends Activity {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-
-
     private String getAlbunNameTemp(){
         return  getString(R.string.album_name_temp);
     }
@@ -344,4 +338,5 @@ public class BaseActivity extends Activity {
     private String getAlbunNameBackup(){
         return  getString(R.string.album_name_backup);
     }
+
 }

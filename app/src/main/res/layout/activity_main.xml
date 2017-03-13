@@ -21,13 +21,12 @@
         android:layout_centerInParent="true"
         android:layout_marginBottom="20dp"
         android:layout_marginTop="10dp"
-        android:text="Ver..."
+        android:text=""
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#ffffffff"
-        android:textSize="@dimen/general"
+        android:textColor="@color/color_buttom_pressed"
         android:layout_gravity="center_horizontal" />
     <TextView
-        android:id="@+id/tvCargando"
+        android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -35,8 +34,7 @@
         android:layout_marginTop="10dp"
         android:text="Cargando..."
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#ffffffff"
-        android:textSize="@dimen/general"
+        android:textColor="@color/color_buttom_pressed"
         android:layout_gravity="center_horizontal" />
 
     <ProgressBar

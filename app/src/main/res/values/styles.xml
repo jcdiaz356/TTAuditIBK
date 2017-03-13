@@ -50,10 +50,12 @@
 
     <style name="Theme.stylingactionbar.widget" parent="@android:style/Theme.Holo">
         <item name="android:popupMenuStyle">@style/PopupMenu</item>
+
         <!--<item name="android:dropDownListViewStyle">@style/DropDownListView</item>-->
         <!--<item name="android:spinnerStyle">@style/DropDownNav</item>-->
         <!--<item name="android:editTextBackground">@drawable/edit_text_holo_dark</item>-->
-        <!--<item name="android:textColorHint">@color/hint</item>-->
+
+        <item name="android:textColorHint">@color/color_dt_white</item>
     </style>
     <!-- ActionBar styles -->
     <style name="MyActionBar2"
@@ -84,16 +86,6 @@
         <item name="android:background">@drawable/bottom_base</item>
     </style>
 
-    <style name="BottonBaseMini" >
-        <item name="android:textColor">#ffffffff</item>
-        <item name="android:textSize">@dimen/year</item>
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
-        <item name="android:paddingLeft">15dp</item>
-        <item name="android:paddingRight">15dp</item>
-        <item name="android:background">@drawable/bottom_base</item>
-    </style>
-
     <style name="BottonCloseAudit" >
         <item name="android:textColor">#ffffffff</item>
         <item name="android:textSize">@dimen/general</item>
@@ -117,16 +109,6 @@
         <item name="android:background">@drawable/bottom_button</item>
     </style>
 
-    <style name="ButtonCerrar" >
-        <item name="android:textColor">#ffffff</item>
-        <item name="android:textSize">20sp</item>
-        <item name="android:paddingTop">5dp</item>
-        <item name="android:paddingBottom">5dp</item>
-        <item name="android:paddingLeft">15dp</item>
-        <item name="android:paddingRight">15dp</item>
-        <item name="android:background">#c60000</item>
-    </style>
-
 
     <style name="BottonBaseRutas" >
         <item name="android:textColor">#ffffffff</item>
@@ -137,6 +119,7 @@
         <item name="android:paddingRight">15dp</item>
         <item name="android:background">@drawable/bottom_base</item>
     </style>
+
     <style name="MyActionBar" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/color_base</item>
         <item name="background">@color/color_base</item>
@@ -144,6 +127,8 @@
     <style name="MyMenu" parent="@style/Widget.AppCompat.Light.PopupMenu">
         <item name="android:background">@color/color_base</item>
         <item name="background">@color/color_base</item>
+
+
     </style>
     <!--<style name="PopupMenu" parent="Widget.AppCompat.PopupMenu">-->
         <!--<item name="android:popupBackground">#ffff7a2f</item>-->
@@ -153,5 +138,9 @@
     <!--</style>-->
     <style name="PopupMenu" parent="@android:style/Widget.Holo.Light.ListPopupWindow">
         <item name="android:popupBackground">@drawable/list_selector</item>
+        <item name="android:textColorPrimary">@color/color_dt_white</item>
+        <item name="android:textColorSecondary">@color/color_dt_white</item>
+        <item name="android:textColor">@color/color_dt_white</item>
+
     </style>
 </resources>

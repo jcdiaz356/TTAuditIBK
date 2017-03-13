@@ -11,10 +11,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.dataservicios.ttauditibk.Model.Media;
+
 import com.dataservicios.ttauditibk.Repositories.MediaRepo;
 import com.dataservicios.ttauditibk.SQLite.DatabaseHelper;
 import com.dataservicios.ttauditibk.adapter.MediaAdapter;
+import com.dataservicios.ttauditibk.model.Media;
 import com.dataservicios.ttauditibk.util.SessionManager;
 
 import java.util.ArrayList;

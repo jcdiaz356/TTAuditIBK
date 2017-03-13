@@ -9,7 +9,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <!--&lt;!&ndash; Estado Normal&ndash;&gt;-->
     <item android:state_pressed="true"  android:drawable="@color/color_buttom_verde" />
-    <item android:state_focused="false" android:state_enabled="true" android:drawable="@color/color_buttom_negro" />
+    <item android:state_focused="false" android:state_enabled="true" android:drawable="@color/color_buttom_rojo" />
     <item android:state_focused="true" android:state_enabled="true" android:drawable="@color/color_buttom_rojo" />
     <item android:state_focused="false" android:state_enabled="false" android:drawable="@color/color_buttom_disabled" />
     <item android:state_focused="true" android:state_enabled="false" android:drawable="@color/color_buttom_disabled" />

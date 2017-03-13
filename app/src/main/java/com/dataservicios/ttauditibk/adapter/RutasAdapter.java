@@ -8,11 +8,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.dataservicios.ttauditibk.Model.Ruta;
+
 import com.dataservicios.ttauditibk.R;
+import com.dataservicios.ttauditibk.model.Ruta;
 
 import java.util.List;
-
 
 /**
  * Created by usuario on 10/01/2015.

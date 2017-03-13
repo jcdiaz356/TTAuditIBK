@@ -2,27 +2,36 @@ package com.dataservicios.ttauditibk.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.util.Log;
 
-import com.dataservicios.ttauditibk.Model.Audit;
-import com.dataservicios.ttauditibk.Model.Media;
-import com.dataservicios.ttauditibk.Model.Pdv;
-import com.dataservicios.ttauditibk.Model.PhoneDetail;
-import com.dataservicios.ttauditibk.Model.PollDetail;
-import com.dataservicios.ttauditibk.Model.User;
 
+import com.dataservicios.ttauditibk.model.Audit;
+import com.dataservicios.ttauditibk.model.Media;
+import com.dataservicios.ttauditibk.model.Pdv;
+import com.dataservicios.ttauditibk.model.PhoneDetail;
+import com.dataservicios.ttauditibk.model.PollDetail;
+import com.dataservicios.ttauditibk.model.User;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.HttpVersion;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreProtocolPNames;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -46,7 +55,8 @@ public class AuditUtil {
      * @return
      */
     public boolean uploadMedia(Media media, int typeSend){
-        HttpURLConnection httpConnection = null;
+
+
         final String url_upload_image = GlobalConstant.dominio + "/insertImagesAlicorp";
 
         String imag = media.getFile();
@@ -59,168 +69,131 @@ public class AuditUtil {
         int type = media.getType();
         String hora_sistema = media.getCreated_at();
         String created_at = media.getCreated_at();
+        long totalSize = 0;
 
         File file = new File(BitmapLoader.getAlbumDirTemp(context).getAbsolutePath() + "/" + imag);
+
+
         if(!file.exists()){
             return true;
         }
-        Bitmap bbicon = null;
+
+        Bitmap bbicon;
+        HttpResponse resp;
+        HttpClient httpClient = new DefaultHttpClient();
+        Log.i("FOO", "Notification started");
+        bbicon= BitmapFactory.decodeFile(String.valueOf(file));
         Bitmap scaledBitmap;
-        bbicon = BitmapLoader.loadBitmap(file.getAbsolutePath(),200,200);
 
-//        if(Build.MODEL.equals("MotoG3")){
-//            scaledBitmap = FileImagenManager.rotateImage(FileImagenManager.scaleDown(bbicon, 450 , true),0);
-//        } else {
-//            scaledBitmap = FileImagenManager.rotateImage(FileImagenManager.scaleDown(bbicon, 450 , true),90);
-//        }
+        if(typeSend > 0){
 
+
+        }
         if(Build.MODEL.equals("MotoG3")){
-            //scaledBitmap = BitmapLoader.scaleDown() BitmapLoader.rotateImage(bbicon,0);
-            scaledBitmap = BitmapLoader.rotateImage(BitmapLoader.scaleDown(bbicon, 480 , true),0);
+            scaledBitmap = BitmapLoader.rotateImage(BitmapLoader.scaleDown(bbicon, 390 , true),0);
         } else {
-            //scaledBitmap = BitmapLoader.rotateImage(bbicon,90);
-            scaledBitmap = BitmapLoader.rotateImage(BitmapLoader.scaleDown(bbicon, 480 , true),90);
+            scaledBitmap = BitmapLoader.rotateImage(BitmapLoader.scaleDown(bbicon, 390 , true),90);
         }
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        scaledBitmap.compress(Bitmap.CompressFormat.JPEG,90, bos);
-        //bbicon.compress(Bitmap.CompressFormat.JPEG,100, bos);
+        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos);
 
+        InputStream in = new ByteArrayInputStream(bos.toByteArray());
+
+        ContentBody foto = new ByteArrayBody(bos.toByteArray(), file.getName());
+        HttpClient httpclient = new DefaultHttpClient();
+        httpclient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+        HttpPost httppost = new HttpPost(url_upload_image);
+        //MultipartEntity mpEntity = new MultipartEntity();
+        AndroidMultiPartEntity mpEntity = new AndroidMultiPartEntity(new AndroidMultiPartEntity.ProgressListener() {
+            @Override
+            public void transferred(long num) {
+                //notification.contentView.setProgressBar(R.id.progressBar1, 100,(int) ((num / (float) totalSize) * 100), true);
+                // notificationManager.notify(1, notification);
+            }
+        });
+
+
+
+        httppost.setEntity(mpEntity);
         try {
-            ContentBody foto = new ByteArrayBody(bos.toByteArray(), file.getName());
-            //ContentBody foto = new ByteArrayBody(bos.toByteArray(), file.getName());
-            //MultipartEntity mpEntity = new MultipartEntity();
-            AndroidMultiPartEntity mpEntity = new AndroidMultiPartEntity(new AndroidMultiPartEntity.ProgressListener() {
-                @Override
-                public void transferred(long num) {
-                    //notification.contentView.setProgressBar(R.id.progressBar1, 100,(int) ((num / (float) totalSize) * 100), true);
-                    // notificationManager.notify(1, notification);
-                }
-            });
 
-            mpEntity.addPart("fotoUp",              foto);
-            mpEntity.addPart("archivo",             new StringBody(String.valueOf(file.getName())));
-            mpEntity.addPart("store_id",            new StringBody(String.valueOf(store_id)));
-            mpEntity.addPart("product_id",          new StringBody(String.valueOf(product_id)));
-            mpEntity.addPart("poll_id",             new StringBody(String.valueOf(poll_id)));
-            mpEntity.addPart("publicities_id",      new StringBody(String.valueOf(publicity_id)));
-            mpEntity.addPart("company_id",          new StringBody(String.valueOf(company_id)));
-            mpEntity.addPart("tipo",                new StringBody(String.valueOf(type)));
-            mpEntity.addPart("horaSistema",         new StringBody(String.valueOf(hora_sistema)));
+            totalSize =  mpEntity.getContentLength();
+            mpEntity.addPart("fotoUp", foto);
+            mpEntity.addPart("archivo", new StringBody(String.valueOf(file.getName())));
+            mpEntity.addPart("store_id", new StringBody(String.valueOf(store_id)));
+            mpEntity.addPart("product_id", new StringBody(String.valueOf(product_id)));
+            mpEntity.addPart("poll_id", new StringBody(String.valueOf(poll_id)));
+            mpEntity.addPart("publicities_id", new StringBody(String.valueOf(publicity_id)));
+            mpEntity.addPart("company_id", new StringBody(String.valueOf(company_id)));
+            mpEntity.addPart("tipo", new StringBody(String.valueOf(type)));
+            mpEntity.addPart("horaSistema", new StringBody(String.valueOf(hora_sistema)));
 
-            URL url = new URL(url_upload_image);
-            httpConnection = (HttpURLConnection) url.openConnection();
-            httpConnection.setReadTimeout(10000);
-            httpConnection.setConnectTimeout(15000);
-            httpConnection.setRequestMethod("POST");
-            httpConnection.setUseCaches(false);
-            httpConnection.setDoInput(true);
-            httpConnection.setDoOutput(true);
-            httpConnection.setRequestProperty("Connection", "Keep-Alive");
-            httpConnection.addRequestProperty("Content-length", mpEntity.getContentLength()+"");
-            httpConnection.addRequestProperty(mpEntity.getContentType().getName(), mpEntity.getContentType().getValue());
-            OutputStream os = httpConnection.getOutputStream();
-            mpEntity.writeTo(httpConnection.getOutputStream());
-            os.close();
-            httpConnection.connect();
+            Log.i("FOO", "About to call httpClient.execute");
+            resp = httpClient.execute(httppost);
+            // resp.getEntity().getContent();
+            if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 
-            if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                Log.d("UPLOAD", "HTTP 200 OK." + httpConnection.getResponseCode()+" "+httpConnection.getResponseMessage()+".");
-                //return readStream(httpConnection.getInputStream());
-                //This return returns the response from the upload.
-                return  true ;
+                Log.i(LOG_TAG, "Screw up with http - " + resp.getStatusLine().getStatusCode());
+                file.delete();
 
             } else {
-                Log.d("UPLOAD", "HTTP "+httpConnection.getResponseCode()+" "+httpConnection.getResponseMessage()+".");
-                // String stream =  readStream(
-                // );
-                // Log.d("UPLOAD", "Response: "+stream);
-                // return stream;
+
+                Log.i(LOG_TAG, "Screw up with http - " + resp.getStatusLine().getStatusCode());
                 return  false ;
             }
-
             //resp.getEntity().consumeContent();
             //return true;
-
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return  false;
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             return  false ;
-        }finally {
-            if(httpConnection != null){
-                httpConnection.disconnect();
-            }
         }
-        //return true;
+        return true;
     }
 
 
-    public static ArrayList<Pdv> getLisStores(int rout_id, int company_id){
-        int success ;
-
-        ArrayList<Pdv> listaPdv = new ArrayList<Pdv>();
+    public static boolean updateDataStore(Pdv pdv) {
+        int success;
         try {
-
-            HashMap<String, String> params = new HashMap<>();
-
-            params.put("id", String.valueOf(rout_id));
-            params.put("company_id", String.valueOf(company_id));
-
+            HashMap<String, String> paramsData = new HashMap<>();
+            paramsData.put("address", pdv.getDireccion());
+//            paramsData.put("telephone", pdv.getTelephone());
+//            paramsData.put("cell", pdv.getCell());
+//            paramsData.put("urbanization", pdv.getReference());
+            paramsData.put("store_id", String.valueOf(pdv.getId()));
+            Log.d("request", "starting");
             JSONParserX jsonParser = new JSONParserX();
             // getting product details by making HTTP request
-            JSONObject json = jsonParser.makeHttpRequest(GlobalConstant.dominio + "/JsonRoadsDetail" ,"POST", params);
-            // check your log for json response
-            Log.d("Login attempt", json.toString());
-            // json success, tag que retorna el json
+            //JSONObject json = jsonParser.makeHttpRequest(GlobalConstant.dominio + "/json/prueba.json", "POST", paramsData);
+            JSONObject json = jsonParser.makeHttpRequest(GlobalConstant.dominio + "/updateStore", "POST", paramsData);
+
+
             if (json == null) {
                 Log.d("JSON result", "Está en nullo");
-
+                return false;
             } else{
                 success = json.getInt("success");
                 if (success == 1) {
-                    JSONArray ObjJson;
-                    ObjJson = json.getJSONArray("roadsDetail");
-                    // looping through All Products
-                    if(ObjJson.length() > 0) {
-
-                        for (int i = 0; i < ObjJson.length(); i++) {
-
-                                JSONObject obj = ObjJson.getJSONObject(i);
-                                Pdv pdv = new Pdv();
-                                pdv.setId(Integer.valueOf(obj.getString("id")));
-                                pdv.setPdv(obj.getString("fullname"));
-                                //pdv.setThumbnailUrl(obj.getString("image"));
-                                pdv.setDireccion(obj.getString("address"));
-                                pdv.setDistrito(obj.getString("district"));
-                                pdv.setType(obj.getString("type"));
-                                pdv.setRegion(obj.getString("region"));
-                                pdv.setTypeBodega(obj.getString("tipo_bodega"));
-                                pdv.setStatus(Integer.valueOf(obj.getString("status")));
-
-//
-                                // adding movie to movies array
-                                listaPdv.add(i,pdv);
-                            }
-
-                        }
-                    Log.d(LOG_TAG, "Ingresado correctamente");
+                    Log.d(LOG_TAG, "Se insertó registro correctamente");
                 }else{
-                    Log.d(LOG_TAG, "No se ingreso el registro");
-                    //return false;
+                    Log.d(LOG_TAG, "no insertó registro");
+                    // return json.getString("message");
+                    // return false;
                 }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
-           // return false;
+            return false;
         }
-        return  listaPdv;
+        return true;
     }
 
-    /**
-     * Close Individual audit
-     * @param audit
-     * @return
-     */
     public static boolean closeAuditRoadStore(Audit audit) {
 
         int success;
@@ -262,16 +235,12 @@ public class AuditUtil {
         return true;
 
     }
-
-    /**
-     * Close all Audit road store and insert time close and open, insert latitude and logitude open, insert latitude and logitude close
-     * @param audit
-     * @return
-     */
     public static boolean closeAuditRoadAll(Audit audit) {
+
 
         int success;
         try {
+
 
             HashMap<String, String> paramsData = new HashMap<>();
 
@@ -289,8 +258,7 @@ public class AuditUtil {
             JSONParserX jsonParser = new JSONParserX();
             // getting product details by making HTTP request
             //JSONObject json = jsonParser.makeHttpRequest(GlobalConstant.dominio + "/json/prueba.json", "POST", paramsData);
-            //JSONObject json = jsonParser.makeHttpRequest(GlobalConstant.dominio + "/insertaTiempo", "POST", paramsData);
-            JSONObject json = jsonParser.makeHttpRequest(GlobalConstant.dominio + "/insertaTiempoNew", "POST", paramsData);
+            JSONObject json = jsonParser.makeHttpRequest(GlobalConstant.dominio + "/insertaTiempo", "POST", paramsData);
             if (json == null) {
                 Log.d("JSON result", "Está en nullo");
                 return false;
@@ -313,6 +281,67 @@ public class AuditUtil {
 
     }
 
+    public static ArrayList<Pdv> getLisStores(int rout_id, int company_id){
+        int success ;
+
+        ArrayList<Pdv> listaPdv = new ArrayList<Pdv>();
+        try {
+
+            HashMap<String, String> params = new HashMap<>();
+
+            params.put("id", String.valueOf(rout_id));
+            params.put("company_id", String.valueOf(company_id));
+
+            JSONParserX jsonParser = new JSONParserX();
+            // getting product details by making HTTP request
+            JSONObject json = jsonParser.makeHttpRequest(GlobalConstant.dominio + "/JsonRoadsDetail" ,"POST", params);
+            // check your log for json response
+            Log.d("Login attempt", json.toString());
+            // json success, tag que retorna el json
+            if (json == null) {
+                Log.d("JSON result", "Está en nullo");
+
+            } else{
+                success = json.getInt("success");
+                if (success == 1) {
+                    JSONArray ObjJson;
+                    ObjJson = json.getJSONArray("roadsDetail");
+                    // looping through All Products
+                    if(ObjJson.length() > 0) {
+
+                        for (int i = 0; i < ObjJson.length(); i++) {
+
+                            JSONObject obj = ObjJson.getJSONObject(i);
+                            Pdv pdv = new Pdv();
+                            pdv.setId(Integer.valueOf(obj.getString("id")));
+                            pdv.setPdv(obj.getString("fullname"));
+                            //pdv.setThumbnailUrl(obj.getString("image"));
+                            pdv.setDireccion(obj.getString("address"));
+                            pdv.setDistrito(obj.getString("district"));
+                            pdv.setType(obj.getString("type"));
+//                            pdv.setRegion(obj.getString("region"));
+//                            pdv.setTypeBodega(obj.getString("tipo_bodega"));
+//                            pdv.setComment(obj.getString("comment"));
+//                            pdv.setCodClient(obj.getString("codclient"));
+                            pdv.setStatus(Integer.valueOf(obj.getString("status")));
+                            listaPdv.add(i,pdv);
+                        }
+
+                    }
+                    Log.d(LOG_TAG, "Ingresado correctamente");
+                }else{
+                    Log.d(LOG_TAG, "No se ingreso el registro");
+                    //return false;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // return false;
+        }
+        return  listaPdv;
+    }
+
+
     public static boolean insertPollDetail(PollDetail pollDetail) {
         int success;
         try {
@@ -332,8 +361,8 @@ public class AuditUtil {
             params.put("auditor"                , String.valueOf(pollDetail.getAuditor()));
             params.put("product_id"             , String.valueOf(pollDetail.getProduct_id()));
             params.put("publicity_id"           , String.valueOf(pollDetail.getPublicity_id()));
-            params.put("company_id"             , String.valueOf(pollDetail.getCompany_id()));
             params.put("category_product_id"    , String.valueOf(pollDetail.getCategory_product_id()));
+            params.put("company_id"             , String.valueOf(pollDetail.getCompany_id()));
             params.put("commentOptions"         , String.valueOf(pollDetail.getCommentOptions()));
             params.put("selectedOptions"        , String.valueOf(pollDetail.getSelectdOptions()));
             params.put("selectedOptionsComment" , String.valueOf(pollDetail.getSelectedOtionsComment()));
@@ -344,7 +373,7 @@ public class AuditUtil {
             JSONParserX jsonParser = new JSONParserX();
             // getting product details by making HTTP request
             //JSONObject json = jsonParser.makeHttpRequest(GlobalConstant.dominio + "/json/prueba.json" ,"POST", params);
-            JSONObject json = jsonParser.makeHttpRequest(GlobalConstant.dominio + "/savePollDetailsReg" ,"POST", params);
+            JSONObject json = jsonParser.makeHttpRequest(GlobalConstant.dominio + "/savePollDetails" ,"POST", params);
             // check your log for json response
             Log.d("Login attempt", json.toString());
             // json success, tag que retorna el json
@@ -393,11 +422,11 @@ public class AuditUtil {
                 success = json.getInt("success");
                 if (success == 1) {
 
-                   // store_id = json.getInt("store_id");
+                    // store_id = json.getInt("store_id");
                     //if (store_id != 0 ) {
-                        store_id_return = json.getInt("store_id");
-                        Log.d(LOG_TAG, "Tienda creada ok, ID");
-                   // }
+                    store_id_return = json.getInt("store_id");
+                    Log.d(LOG_TAG, "Tienda creada ok, ID");
+                    // }
 
                 }else{
                     Log.d(LOG_TAG, "No Hay datos");
@@ -584,4 +613,47 @@ public class AuditUtil {
         }
         return  user;
     }
+
+    public static boolean saveLatLongStore(Integer store_id, double latitude,double longitude ) {
+
+        int success;
+        try {
+
+            HashMap<String, String> params = new HashMap<>();
+
+            params.put("id"       , String.valueOf(store_id));
+            params.put("latitud"       , String.valueOf(latitude));
+            params.put("longitud"      , String.valueOf(longitude));
+
+            JSONParserX jsonParser = new JSONParserX();
+            // getting product details by making HTTP request
+            //JSONObject json = jsonParser.makeHttpRequest(GlobalConstant.dominio + "/json/prueba.json" ,"POST", params);
+            JSONObject json = jsonParser.makeHttpRequest(GlobalConstant.dominio + "/updatePositionStore" ,"POST", params);
+            // check your log for json response
+            Log.d("Login attempt", json.toString());
+
+            // json success, tag que retorna el json
+
+            if (json == null) {
+                Log.d(LOG_TAG, "Está en nullo");
+                return false;
+            } else{
+                success = json.getInt("success");
+                if (success == 1) {
+                    Log.d(LOG_TAG, "Se insertó registro correctamente");
+                }else{
+                    Log.d(LOG_TAG, "no insertó registro");
+                    // return json.getString("message");
+                    // return false;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+
+    }
+
 }

@@ -6,8 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.dataservicios.ttauditibk.Model.User;
+
 import com.dataservicios.ttauditibk.SQLite.DatabaseHelper;
+import com.dataservicios.ttauditibk.model.User;
 
 import java.util.ArrayList;
 import java.util.List;

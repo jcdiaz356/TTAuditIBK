@@ -1,6 +1,5 @@
 package com.dataservicios.ttauditibk.app;
 
-
 import android.app.Application;
 import android.content.Intent;
 import android.text.TextUtils;
@@ -19,33 +18,26 @@ public class AppController extends Application {
 
 	public static final String TAG = AppController.class.getSimpleName();
 
-	private boolean serviceRunningFlag;
-
 	private RequestQueue mRequestQueue;
 	private ImageLoader mImageLoader;
+	private boolean serviceRunningFlag;
 
 	private static AppController mInstance;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
-		Log.d(TAG, "onCreated");
 		startService(new Intent(this, UpdateServices.class));
 		startService(new Intent(this, MonitoGPSServices.class));
 		mInstance = this;
 	}
 
-
-
 	public static synchronized AppController getInstance() {
 		return mInstance;
 	}
-
 	public void setServiceRunningFlag(boolean serviceRunningFlag) {
 		this.serviceRunningFlag = serviceRunningFlag;
 	}
-
 	public RequestQueue getRequestQueue() {
 		if (mRequestQueue == null) {
 			mRequestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -79,8 +71,6 @@ public class AppController extends Application {
 			mRequestQueue.cancelAll(tag);
 		}
 	}
-
-
 	@Override
 	public void onTerminate() {
 		super.onTerminate();

@@ -17,9 +17,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.dataservicios.ttauditibk.Model.Pdv;
-import com.dataservicios.ttauditibk.SQLite.DatabaseHelper;
+
 import com.dataservicios.ttauditibk.adapter.PdvsAdapter;
+import com.dataservicios.ttauditibk.model.Pdv;
 import com.dataservicios.ttauditibk.util.AuditUtil;
 import com.dataservicios.ttauditibk.util.GPSTracker;
 import com.dataservicios.ttauditibk.util.GlobalConstant;
@@ -36,33 +36,33 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+
 /**
  * Created by usuario on 06/01/2015.
  */
 public class PuntosVenta extends Activity {
-    private static final String LOG_TAG = PuntosVenta.class.getSimpleName();
-    private static final String TAG = PuntosVenta.class.getSimpleName();
-    private Activity MyActivity = this ;
+
+    // Log tag
+    //private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = PuntoVenta.class.getSimpleName();
 
     EditText pdvs1,pdvsAuditados1,porcentajeAvance1;
     private TextView tvPDVSdelDía;
-   // private Button bt_MapaRuta , btMapaRutasAll;
-    // Movies json url
 
+    // Movies json url
+    private static final String url = "http://www.dataservicios.com/webservice/pdvspordia.php";
     private ProgressDialog pDialog;
     private List<Pdv> pdvList = new ArrayList<Pdv>();
     private ListView listView;
     private PdvsAdapter adapter;
     private int IdRuta ;
     private String fechaRuta;
-    private Button bt_MapaRuta , btMapaRutasAll;
-    private DatabaseHelper db;
+    private Button btMapaRuta,btMapaRutasAll;
 
-   // Activity MyActivity ;
+    Activity myActivity = (Activity) this;
     private JSONObject params;
     private SessionManager session;
-    private String email_user, id_user, name_user, region , typeBodega,type ,typeBodega_id;
-    private int store_id;
+    private String email_user, id_user, name_user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,32 +71,32 @@ public class PuntosVenta extends Activity {
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setTitle("PDVs");
-        overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_slide_out_left);
+        overridePendingTransition(R.anim.anim_slide_in_left,R.anim.anim_slide_out_left);
+
+
+       // final Activity myActivity = (Activity) this;
 
         pdvs1 = (EditText) findViewById(R.id.etPDVS);
         pdvsAuditados1 = (EditText) findViewById(R.id.etPDVSAuditados);
         porcentajeAvance1 = (EditText) findViewById(R.id.etPorcentajeAvance);
-        tvPDVSdelDía = (TextView) findViewById(R.id.tvPDVSdelDia);
+        tvPDVSdelDía = (TextView) findViewById(R.id.tvPDVSdelDía);
 
         Bundle bundle = getIntent().getExtras();
-        IdRuta = bundle.getInt("road_id");
+        IdRuta= bundle.getInt("idRuta");
         fechaRuta = bundle.getString("fechaRuta");
 
         tvPDVSdelDía.setText(fechaRuta);
 
 
-        session = new SessionManager(MyActivity);
+        session = new SessionManager(myActivity);
+        // get user data from session
         HashMap<String, String> user = session.getUserDetails();
+        // name
         name_user = user.get(SessionManager.KEY_NAME);
+        // email
         email_user = user.get(SessionManager.KEY_EMAIL);
+        // id
         id_user = user.get(SessionManager.KEY_ID_USER);
-
-        db = new DatabaseHelper(getApplicationContext());
-
-        pDialog = new ProgressDialog(MyActivity);
-        pDialog.setMessage("Cargando...");
-        pDialog.setCancelable(false);
-
         //Añadiendo parametros para pasar al Json por metodo POST
         params = new JSONObject();
         try {
@@ -107,17 +107,17 @@ public class PuntosVenta extends Activity {
             e.printStackTrace();
         }
 
-        bt_MapaRuta = (Button) findViewById(R.id.btMapaRuta);
+        btMapaRuta = (Button) findViewById(R.id.btMapaRuta);
         btMapaRutasAll = (Button) findViewById(R.id.btMapaRutaAll);
 
-        bt_MapaRuta.setOnClickListener(new View.OnClickListener() {
+        btMapaRuta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Bundle argRuta = new Bundle();
                 argRuta.putInt("id", IdRuta);
                 //Intent intent = new Intent("com.dataservicios.ttauditcolgate.MAPARUTAS");
-                Intent intent = new Intent(MyActivity,MapaRuta.class);
+                Intent intent = new Intent(myActivity,MapaRuta.class);
                 intent.putExtras(argRuta);
                 startActivity(intent);
             }
@@ -130,7 +130,10 @@ public class PuntosVenta extends Activity {
                 Bundle argRuta = new Bundle();
                 argRuta.putInt("id", IdRuta);
 
-
+//
+//                Intent intent = new Intent(myActivity, MapaRuta.class);
+//                intent.putExtras(argRuta);
+//                startActivity(intent);
                 try {
                     Intent intent = new Intent();
                     intent.setComponent(new ComponentName("com.dataservicios.ttauditrutas", "com.dataservicios.ttauditrutas.MapaRuta"));
@@ -139,7 +142,7 @@ public class PuntosVenta extends Activity {
                 } catch (Exception e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
-                    Toast.makeText(MyActivity,"No se encuentra instalada la aplicación", Toast.LENGTH_LONG).show();
+                    Toast.makeText(myActivity,"No se encuentra instalada la aplicación", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse("market://details?id=com.dataservicios.ttauditrutas"));
                     startActivity(intent);
@@ -148,8 +151,6 @@ public class PuntosVenta extends Activity {
                 }
             }
         });
-
-
         listView = (ListView) findViewById(R.id.list);
         adapter = new PdvsAdapter(this, pdvList);
 
@@ -164,191 +165,255 @@ public class PuntosVenta extends Activity {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String strDate = sdf.format(c.getTime());
                 GlobalConstant.inicio = strDate;
-                Log.i("FECHA", strDate);
+                Log.i("FECHA",strDate);
 
                 //Obteniendo Ubicacion
-                GPSTracker gps = new GPSTracker(MyActivity);
+                GPSTracker gps = new GPSTracker(myActivity);
 
                 // Verificar si GPS esta habilitado
-                if (gps.canGetLocation()) {
+                if(gps.canGetLocation()){
                     double latitude = gps.getLatitude();
                     double longitude = gps.getLongitude();
                     GlobalConstant.latitude_open = latitude;
                     GlobalConstant.longitude_open = longitude;
                     //Toast toast = Toast.makeText(getApplicationContext(), "Lat: " + String.valueOf(latitude) + "Long: " + String.valueOf(longitude), Toast.LENGTH_SHORT);
                     //toast.show();
-                } else {
+                }else{
                     // Indicar al Usuario que Habilite su GPS
                     gps.showSettingsAlert();
                 }
 
                 // selected item
-                String selected = ((TextView) view.findViewById(R.id.tvId)).getText().toString();
-                store_id = Integer.valueOf(selected);
-                type = ((TextView) view.findViewById(R.id.tvType)).getText().toString();
-                region = ((TextView) view.findViewById(R.id.tvRegion)).getText().toString();
-
-
-                Toast toast = Toast.makeText(getApplicationContext(), String.valueOf(store_id), Toast.LENGTH_SHORT);
+                String selected =((TextView) view.findViewById(R.id.tvId)).getText().toString();
+                Toast toast = Toast.makeText(getApplicationContext(), selected, Toast.LENGTH_SHORT);
                 toast.show();
                 Bundle argPDV = new Bundle();
-                argPDV.putInt("idPDV", Integer.valueOf(store_id));
-                argPDV.putInt("road_id", Integer.valueOf(IdRuta));
-                argPDV.putString("fechaRuta", fechaRuta);
-                argPDV.putString("region", region);
-                argPDV.putString("typeBodega", typeBodega);
-
-                Intent intent = new Intent(MyActivity, DetallePdv.class);
-                //Intent intent = new Intent(MyActivity, StoreOpenClose.class);
+                argPDV.putInt("idPDV", Integer.valueOf(selected) );
+                argPDV.putInt("idRuta", Integer.valueOf(IdRuta) );
+                argPDV.putString("fechaRuta",fechaRuta);
+                //Intent intent = new Intent("com.dataservicios.systemauditor.DETALLEPDV");
+                Intent intent = new Intent(myActivity,DetallePdv.class);
                 intent.putExtras(argPDV);
                 startActivity(intent);
-
             }
         });
         listView.setAdapter(adapter);
+//        pDialog = new ProgressDialog(this);
+//        // Showing progress dialog before making http request
+//        pDialog.setMessage("Loading...");
+//        pDialog.show();
 
         new loadStores().execute();
 
-
+//        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST , GlobalConstant.dominio + "/JsonRoadsDetail" ,params,
+//                new Response.Listener<JSONObject>()
+//                {
+//                    @Override
+//                    public void onResponse(JSONObject response)
+//                    {
+//                        Log.d("DATAAAA", response.toString());
+//                        //adapter.notifyDataSetChanged();
+//                        try {
+//                            //String agente = response.getString("agentes");
+//                            int success =  response.getInt("success");
+//                            float contadorPDVS =0 ;
+//                            float auditadosPDV =0;
+//                            if (success == 1) {
+////
+//                                JSONArray ObjJson;
+//                                ObjJson = response.getJSONArray("roadsDetail");
+//                                // looping through All Products
+//                                if(ObjJson.length() > 0) {
+//
+//                                    contadorPDVS = contadorPDVS + Integer.valueOf(response.getString("pdvs"));
+//                                    auditadosPDV =  auditadosPDV + Integer.valueOf(response.getString("auditados"));
+//
+//                                    for (int i = 0; i < ObjJson.length(); i++) {
+//
+//                                        try {
+//
+//                                            JSONObject obj = ObjJson.getJSONObject(i);
+//                                            Pdv pdv = new Pdv();
+//                                            pdv.setId(Integer.valueOf(obj.getString("id")));
+//                                            pdv.setPdv(obj.getString("fullname"));
+//                                            //pdv.setThumbnailUrl(obj.getString("image"));
+//                                            pdv.setDireccion(obj.getString("address"));
+//                                            pdv.setDistrito(obj.getString("district"));
+//                                            pdv.setStatus(obj.getInt("status"));
+//
+//                                            pdvList.add(pdv);
+//                                        } catch (JSONException e) {
+//                                            e.printStackTrace();
+//                                        }
+//
+//                                    }
+//
+//                                    pdvs1.setText(String.valueOf(contadorPDVS)) ;
+//                                    pdvsAuditados1.setText(String.valueOf(auditadosPDV));
+//
+//                                    float porcentajeAvance=(auditadosPDV / contadorPDVS) *100;
+//                                    BigDecimal big = new BigDecimal(porcentajeAvance);
+//                                    big = big.setScale(2, RoundingMode.HALF_UP);
+//                                    porcentajeAvance1.setText( String.valueOf(big ) + " % ");
+//                                }
+//
+//
+//
+//
+//
+//                            }
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                        adapter.notifyDataSetChanged();
+//                        hidePDialog();
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        //VolleyLog.d(TAG, "Error: " + error.getMessage());
+//                        hidePDialog();
+//                    }
+//                }
+//        );
+//
+//        AppController.getInstance().addToRequestQueue(jsObjRequest);
     }
 
+    class loadStores extends AsyncTask<Void, Integer, ArrayList<Pdv>> {
+        /**
+         * Antes de comenzar en el hilo determinado, Mostrar progresión
+         */
+        boolean failure = false;
+
+        @Override
+        protected void onPreExecute() {
+            //tvCargando.setText("Cargando Product...");
+
+            pDialog = new ProgressDialog(myActivity);
+            pDialog.setMessage("Cargando...");
+            pDialog.setCancelable(false);
+            pDialog.show();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected ArrayList<Pdv> doInBackground(Void... params) {
+            // TODO Auto-generated method stub
+
+            ArrayList<Pdv> listPdv = new ArrayList<Pdv>();
+            listPdv = AuditUtil.getLisStores(IdRuta, GlobalConstant.company_id);
+            return listPdv;
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         **/
+        protected void onPostExecute(ArrayList<Pdv> pdvs) {
+            // dismiss the dialog once product deleted
 
 
-
-
-        class loadStores extends AsyncTask<Void, Integer, ArrayList<Pdv>> {
-            /**
-             * Antes de comenzar en el hilo determinado, Mostrar progresión
-             */
-            boolean failure = false;
-
-            @Override
-            protected void onPreExecute() {
-                //tvCargando.setText("Cargando Product...");
-
-                pDialog = new ProgressDialog(MyActivity);
-                pDialog.setMessage("Cargando...");
-                pDialog.setCancelable(false);
-                pDialog.show();
-                super.onPreExecute();
-            }
-
-            @Override
-            protected ArrayList<Pdv> doInBackground(Void... params) {
-                // TODO Auto-generated method stub
-
-                ArrayList<Pdv> listPdv = new ArrayList<Pdv>();
-                listPdv = AuditUtil.getLisStores(IdRuta, GlobalConstant.company_id);
-                return listPdv;
-            }
-
-            /**
-             * After completing background task Dismiss the progress dialog
-             **/
-            protected void onPostExecute(ArrayList<Pdv> pdvs) {
-                // dismiss the dialog once product deleted
-                hidepDialog();
-
-                if (pdvs.isEmpty()) {
+            if (pdvs.isEmpty()) {
 //                Toast.makeText(TimelineActivity.this, getResources().getString(R.string.label_tweets_not_found),
 //                        Toast.LENGTH_SHORT).show();
 
-                    //pdvList.addAll(pdvs);
-                } else {
+                //pdvList.addAll(pdvs);
+            } else {
 //                updateListView(tweets);
 //                Toast.makeText(TimelineActivity.this, getResources().getString(R.string.label_tweets_downloaded),
 //                        Toast.LENGTH_SHORT).show();
 
 
-                    float contadorStore = pdvs.size();
-                    float auditadosStore = 0;
+                float contadorStore = pdvs.size();
+                float auditadosStore = 0;
 
 
-                    for (int i = 0; i < pdvs.size(); i++) {
+                for (int i = 0; i < pdvs.size(); i++) {
 
-                        if(pdvs.get(i).getStatus() == 1) {
-                            auditadosStore ++;
-                        }
+                    if(pdvs.get(i).getStatus() == 1) {
+                        auditadosStore ++;
                     }
-
-
-                    pdvs1.setText(String.valueOf(contadorStore)) ;
-                    pdvsAuditados1.setText(String.valueOf(auditadosStore));
-
-                    float porcentajeAvance=(auditadosStore / contadorStore) *100;
-                    BigDecimal big = new BigDecimal(porcentajeAvance);
-                    big = big.setScale(2, RoundingMode.HALF_UP);
-                    porcentajeAvance1.setText( String.valueOf(big) + " % ");
-
-                    pdvList.addAll(pdvs);
-                    adapter.notifyDataSetChanged();
                 }
 
+
+                pdvs1.setText(String.valueOf(contadorStore)) ;
+                pdvsAuditados1.setText(String.valueOf(auditadosStore));
+
+                float porcentajeAvance=(auditadosStore / contadorStore) *100;
+                BigDecimal big = new BigDecimal(porcentajeAvance);
+                big = big.setScale(2, RoundingMode.HALF_UP);
+                porcentajeAvance1.setText( String.valueOf(big) + " % ");
+
+                pdvList.addAll(pdvs);
+                adapter.notifyDataSetChanged();
             }
+
+
+            hidePDialog();
         }
+    }
 
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        hidePDialog();
+    }
+    private void hidePDialog() {
+        if (pDialog != null) {
+            pDialog.dismiss();
+            pDialog = null;
+        }
+    }
 
-            @Override
-            public void onDestroy() {
-                super.onDestroy();
-                hidepDialog();
-            }
-
-
-            @Override
-            public void onBackPressed() {
-                super.onBackPressed();
-                this.finish();
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
 //        Intent a = new Intent(this,PanelAdmin.class);
 //        //a.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //        startActivity(a);
-                overridePendingTransition(R.anim.anim_slide_in_right, R.anim.anim_slide_out_right);
-            }
+        overridePendingTransition(R.anim.anim_slide_in_right,R.anim.anim_slide_out_right);
+    }
 
-            @Override
-            public boolean onOptionsItemSelected(MenuItem item) {
-                switch (item.getItemId()) {
-                    case android.R.id.home:
-                        // app icon in action bar clicked; goto parent activity.
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // app icon in action bar clicked; goto parent activity.
 //                this.finish();
 //                Intent a = new Intent(this,PanelAdmin.class);
 //                //a.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //                startActivity(a);
 //                overridePendingTransition(R.anim.anim_slide_in_right,R.anim.anim_slide_out_right);
-                        onBackPressed();
-                        return true;
-                    default:
-                        return super.onOptionsItemSelected(item);
-                }
-                //return super.onOptionsItemSelected(item);
-            }
-
-
-            private void showpDialog() {
-                if (!pDialog.isShowing())
-                    pDialog.show();
-            }
-
-            private void hidepDialog() {
-                if (pDialog.isShowing())
-                    pDialog.dismiss();
-            }
-
-            @Override
-            public void onResume() {
-                super.onResume();
-
-
-            }
-
-            @Override
-            public void onRestart() {
-                super.onRestart();
-                //When BACK BUTTON is pressed, the activity on the stack is restarted
-                //Do what you want on the refresh procedure here
-                finish();
-                startActivity(getIntent());
-            }
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
+        //return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        //When BACK BUTTON is pressed, the activity on the stack is restarted
+        //Do what you want on the refresh procedure here
+        finish();
+        startActivity(getIntent());
+    }
+
+
+
+}
 

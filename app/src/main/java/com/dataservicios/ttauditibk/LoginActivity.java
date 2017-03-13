@@ -7,19 +7,16 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
-
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.dataservicios.ttauditibk.Model.User;
+import com.dataservicios.ttauditibk.model.User;
 import com.dataservicios.ttauditibk.Repositories.UserRepo;
-
 import com.dataservicios.ttauditibk.util.AuditUtil;
 import com.dataservicios.ttauditibk.util.Connectivity;
-
 import com.dataservicios.ttauditibk.util.JSONParser;
 import com.dataservicios.ttauditibk.util.SessionManager;
 
@@ -41,7 +38,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     private String userLogin, passwordLogin, simSNLogin;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -56,8 +52,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         ingresar.setOnClickListener(this);
         session = new SessionManager(getApplicationContext());
         userRepo = new UserRepo(myActivity);
-
-
 
         if(Connectivity.isConnected(myActivity)) {
             if (Connectivity.isConnectedFast(myActivity)) {
@@ -81,7 +75,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             }
         }
     }
-
 
 
     @Override
@@ -108,10 +101,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     userLogin = etUsuario.getText().toString();
                     passwordLogin = etPassword.getText().toString();
                     new AttemptLogin().execute();
-
                 }
                 break;
-
         }
     }
 
@@ -155,7 +146,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 userRepo.deleteAllUser();
                 userRepo.createUser(user);
                 session.createLoginSession(user.getName().toString(), user.getEmail(), String.valueOf(user.getId()));
-                Intent i = new Intent(LoginActivity.this, PanelAdmin.class);
+                Intent i = new Intent(myActivity, PanelAdmin.class);
                 startActivity(i);
                 finish();
 

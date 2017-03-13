@@ -15,8 +15,9 @@ import android.widget.TextView;
 import com.dataservicios.ttauditibk.AlbumStorageDirFactory;
 import com.dataservicios.ttauditibk.BaseAlbumDirFactory;
 import com.dataservicios.ttauditibk.FroyoAlbumDirFactory;
-import com.dataservicios.ttauditibk.Model.Media;
+
 import com.dataservicios.ttauditibk.R;
+import com.dataservicios.ttauditibk.model.Media;
 import com.dataservicios.ttauditibk.util.BitmapLoader;
 
 import java.io.File;

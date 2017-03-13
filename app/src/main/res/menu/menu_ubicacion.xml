@@ -4,7 +4,7 @@
         <!-- Adds an item to the list. -->
         <item android:id="@+id/action_previous" android:title="@string/exit"
 
-            android:icon="@drawable/ic_agente"
+            android:icon="@drawable/ic_launcher"
             android:showAsAction="ifRoom|withText" />
 
 

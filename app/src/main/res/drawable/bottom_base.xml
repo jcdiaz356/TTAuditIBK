@@ -11,6 +11,6 @@
     <item android:state_pressed="true"  android:drawable="@color/color_buttom_pressed" />
     <item android:state_focused="false" android:state_enabled="true" android:drawable="@color/color_buttom_normal" />
     <item android:state_focused="true" android:state_enabled="true" android:drawable="@color/color_buttom_normal" />
-    <item android:state_focused="false" android:state_enabled="false" android:drawable="@color/color_buttom_disabled" />
-    <item android:state_focused="true" android:state_enabled="false" android:drawable="@color/color_buttom_disabled" />
+    <item android:state_focused="false" android:state_enabled="false" android:drawable="@color/color_buttom_normal" />
+    <item android:state_focused="true" android:state_enabled="false" android:drawable="@color/color_buttom_normal" />
 </selector>

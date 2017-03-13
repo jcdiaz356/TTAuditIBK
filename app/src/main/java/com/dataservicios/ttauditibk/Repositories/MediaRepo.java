@@ -9,8 +9,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.dataservicios.ttauditibk.Model.Media;
+
 import com.dataservicios.ttauditibk.SQLite.DatabaseHelper;
+import com.dataservicios.ttauditibk.model.Media;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

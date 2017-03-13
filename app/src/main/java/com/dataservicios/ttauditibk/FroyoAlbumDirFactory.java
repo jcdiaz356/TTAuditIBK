@@ -11,7 +11,7 @@ public final class FroyoAlbumDirFactory extends AlbumStorageDirFactory {
 		// TODO Auto-generated method stub
 		return new File(
 		  Environment.getExternalStoragePublicDirectory(
-				  Environment.DIRECTORY_PICTURES
+		    Environment.DIRECTORY_PICTURES
 		  ), 
 		  albumName
 		);

@@ -3,17 +3,21 @@ package com.dataservicios.ttauditibk;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+
 import com.dataservicios.ttauditibk.app.AppController;
 import com.dataservicios.ttauditibk.util.DirectionsJSONParser;
 import com.dataservicios.ttauditibk.util.GlobalConstant;
@@ -42,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
+
 /**
  * Created by usuario on 26/01/2015.
  */
@@ -51,17 +56,17 @@ public class MapaRuta extends FragmentActivity {
     ArrayList<Marker> myMarkersPointsInterbank = new ArrayList<Marker>();
     ArrayList<Marker> myMarkersPointsAlicorp = new ArrayList<Marker>();
     ArrayList<Marker> myMarkersPointsBayer = new ArrayList<Marker>();
+
     MarkerOptions options;
     private int IdRuta ;
     private ProgressDialog pDialog;
     private JSONObject params;
     private double lat ;
     private double lon ;
-    // private Button btn_MarkeInter, btn_MarkeAlicorp, btn_MarkeBayer ;
-    private boolean isPressedInterbak = false,  isPressedAlicorp = false , isPressedBayer ;
+    private Button btn_MarkeInter, btn_MarkeAlicorp,  btn_MarkeBayer ;
+    private boolean isPressedInterbak = false,  isPressedAlicorp = false ,isPressedBayer ;
     Activity MyActivity= (Activity) this;
     Toast toast;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,9 +76,9 @@ public class MapaRuta extends FragmentActivity {
         getActionBar().setTitle("Mapa de Rutas");
         overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_slide_out_left);
 
-//        btn_MarkeInter = (Button) findViewById(R.id.btnMarkeInter);
-//        btn_MarkeAlicorp = (Button) findViewById(R.id.btnMarkeAlicorp);
-//        btn_MarkeBayer = (Button) findViewById(R.id.btnMarkeBayer);
+        btn_MarkeInter = (Button) findViewById(R.id.btnMarkeInter);
+        btn_MarkeAlicorp = (Button) findViewById(R.id.btnMarkeAlicorp);
+        btn_MarkeBayer = (Button) findViewById(R.id.btnMarkeBayer);
 
         Bundle bundle = getIntent().getExtras();
         IdRuta= bundle.getInt("id");
@@ -89,6 +94,7 @@ public class MapaRuta extends FragmentActivity {
         params = new JSONObject();
         try {
             params.put("id", IdRuta);
+
             //params.put("id_pdv",idPDV);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -139,121 +145,118 @@ public class MapaRuta extends FragmentActivity {
 //        map.addMarker(options);
 
 
-//        btn_MarkeInter.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(isPressedInterbak) {
-//
-//                    Drawable img = MyActivity.getResources().getDrawable( R.drawable.ic_inter_active);
-//                    img.setBounds( 0, 0, 95, 95 );  // set the image size
-//                    //txtVw.setCompoundDrawables( img, null, null, null );
-//                    btn_MarkeInter.setCompoundDrawables(null, img, null, null);
-//                    // btn_MarkeInter.setBackgroundResource(R.drawable.ic_inter_active);
-//
-//                    //markerPoints.
-//
-//                    for (Marker m : myMarkersPointsInterbank) {
-//                        m.setVisible(true);
-//                    }
-//
-//                    toast = Toast.makeText(MyActivity, "Activado puntos de interbank", Toast.LENGTH_LONG);
-//                    toast.show();
-//                } else {
-//
-//                    Drawable img = MyActivity.getResources().getDrawable( R.drawable.ic_inter_desactive);
-//                    img.setBounds( 0, 0, 95, 95 );  // set the image size
-//                    //txtVw.setCompoundDrawables( img, null, null, null );
-//                    btn_MarkeInter.setCompoundDrawables(null,img,null,null);
-//                    //btn_MarkeInter.setBackgroundResource(R.drawable.ic_inter_desactive);
-//
-//                    for (Marker m : myMarkersPointsInterbank) {
-//                        m.setVisible(false);
-//                    }
-//                    toast = Toast.makeText(MyActivity, "", Toast.LENGTH_LONG);
-//                    toast = Toast.makeText(MyActivity, "Desactivado puntos de interbank", Toast.LENGTH_LONG);
-//                    toast.show();
-//                }
-//                isPressedInterbak = !isPressedInterbak;
-//            }
-//        });
+        btn_MarkeInter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isPressedInterbak) {
 
+                    Drawable img = MyActivity.getResources().getDrawable( R.drawable.ic_inter_active);
+                   img.setBounds( 0, 0, 130, 130 );  // set the image size
+                    //txtVw.setCompoundDrawables( img, null, null, null );
+                    btn_MarkeInter.setCompoundDrawables(null, img, null, null);
+                   // btn_MarkeInter.setBackgroundResource(R.drawable.ic_inter_active);
 
-//        btn_MarkeAlicorp.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(isPressedAlicorp) {
-//
-//                    Drawable img = MyActivity.getResources().getDrawable( R.drawable.ic_alicorp_active);
-//                    img.setBounds( 0, 0, 95, 95 );  // set the image size
-//                    //txtVw.setCompoundDrawables( img, null, null, null );
-//                    btn_MarkeAlicorp.setCompoundDrawables(null, img, null, null);
-//                    // btn_MarkeInter.setBackgroundResource(R.drawable.ic_inter_active);
-//
-//                    //markerPoints.
-//
-//                    for (Marker m : myMarkersPointsAlicorp) {
-//                        m.setVisible(true);
-//                    }
-//
-//                    toast = Toast.makeText(MyActivity, "Activado puntos de Alicorp", Toast.LENGTH_LONG);
-//                    toast.show();
-//                } else {
-//
-//                    Drawable img = MyActivity.getResources().getDrawable( R.drawable.ic_alicorp_desactive);
-//                    img.setBounds( 0, 0, 95, 95 );  // set the image size
-//                    //txtVw.setCompoundDrawables( img, null, null, null );
-//                    btn_MarkeAlicorp.setCompoundDrawables(null,img,null,null);
-//                    //btn_MarkeInter.setBackgroundResource(R.drawable.ic_inter_desactive);
-//
-//                    for (Marker m : myMarkersPointsAlicorp) {
-//                        m.setVisible(false);
-//                    }
-//                    toast = Toast.makeText(MyActivity, "", Toast.LENGTH_LONG);
-//                    toast = Toast.makeText(MyActivity, "Desactivado puntos de Alicorp", Toast.LENGTH_LONG);
-//                    toast.show();
-//                }
-//                isPressedAlicorp = !isPressedAlicorp;
-//            }
-//        });
-//
-//        btn_MarkeBayer.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(isPressedBayer) {
-//
-//                    Drawable img = MyActivity.getResources().getDrawable( R.drawable.ic_bayer_active);
-//                    img.setBounds( 0, 0, 95, 95 );  // set the image size
-//                    //txtVw.setCompoundDrawables( img, null, null, null );
-//                    btn_MarkeBayer.setCompoundDrawables(null, img, null, null);
-//                    // btn_MarkeInter.setBackgroundResource(R.drawable.ic_inter_active);
-//
-//                    //markerPoints.
-//
-//                    for (Marker m : myMarkersPointsBayer) {
-//                        m.setVisible(true);
-//                    }
-//
-//                    toast = Toast.makeText(MyActivity, "Activado puntos de Bayer", Toast.LENGTH_LONG);
-//                    toast.show();
-//                } else {
-//
-//                    Drawable img = MyActivity.getResources().getDrawable( R.drawable.ic_bayer_desactive);
-//                    img.setBounds( 0, 0, 95, 95 );  // set the image size
-//                    //txtVw.setCompoundDrawables( img, null, null, null );
-//                    btn_MarkeBayer.setCompoundDrawables(null,img,null,null);
-//                    //btn_MarkeInter.setBackgroundResource(R.drawable.ic_inter_desactive);
-//
-//                    for (Marker m : myMarkersPointsBayer) {
-//                        m.setVisible(false);
-//                    }
-//                    toast = Toast.makeText(MyActivity, "", Toast.LENGTH_LONG);
-//                    toast = Toast.makeText(MyActivity, "Desactivado puntos de Bayer", Toast.LENGTH_LONG);
-//                    toast.show();
-//                }
-//                isPressedBayer = !isPressedBayer;
-//            }
-//        });
+                    //markerPoints.
 
+                    for (Marker m : myMarkersPointsInterbank) {
+                        m.setVisible(true);
+                    }
+
+                    toast = Toast.makeText(MyActivity, "Activado puntos de interbank", Toast.LENGTH_LONG);
+                    toast.show();
+                } else {
+                    Drawable img = MyActivity.getResources().getDrawable( R.drawable.ic_inter_desactive);
+                    img.setBounds( 0, 0, 130, 130 );  // set the image size
+                    //txtVw.setCompoundDrawables( img, null, null, null );
+                    btn_MarkeInter.setCompoundDrawables(null,img,null,null);
+                    //btn_MarkeInter.setBackgroundResource(R.drawable.ic_inter_desactive);
+
+                    for (Marker m : myMarkersPointsInterbank) {
+                        m.setVisible(false);
+                    }
+                    toast = Toast.makeText(MyActivity, "", Toast.LENGTH_LONG);
+                    toast = Toast.makeText(MyActivity, "Desactivado puntos de interbank", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+                isPressedInterbak = !isPressedInterbak;
+            }
+        });
+
+        btn_MarkeAlicorp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isPressedAlicorp) {
+
+                    Drawable img = MyActivity.getResources().getDrawable( R.drawable.ic_alicorp_active);
+                    img.setBounds( 0, 0, 130, 130 );  // set the image size
+                    //txtVw.setCompoundDrawables( img, null, null, null );
+                    btn_MarkeAlicorp.setCompoundDrawables(null, img, null, null);
+                    // btn_MarkeInter.setBackgroundResource(R.drawable.ic_inter_active);
+
+                    //markerPoints.
+
+                    for (Marker m : myMarkersPointsAlicorp) {
+                        m.setVisible(true);
+                    }
+
+                    toast = Toast.makeText(MyActivity, "Activado puntos de Alicorp", Toast.LENGTH_LONG);
+                    toast.show();
+                } else {
+
+                    Drawable img = MyActivity.getResources().getDrawable( R.drawable.ic_alicorp_desactive);
+                    img.setBounds( 0, 0, 130, 130 );  // set the image size
+                    //txtVw.setCompoundDrawables( img, null, null, null );
+                    btn_MarkeAlicorp.setCompoundDrawables(null,img,null,null);
+                    //btn_MarkeInter.setBackgroundResource(R.drawable.ic_inter_desactive);
+
+                    for (Marker m : myMarkersPointsAlicorp) {
+                        m.setVisible(false);
+                    }
+                    toast = Toast.makeText(MyActivity, "", Toast.LENGTH_LONG);
+                    toast = Toast.makeText(MyActivity, "Desactivado puntos de Alicorp", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+                isPressedAlicorp = !isPressedAlicorp;
+            }
+        });
+
+        btn_MarkeBayer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isPressedBayer) {
+
+                    Drawable img = MyActivity.getResources().getDrawable( R.drawable.ic_bayer_active);
+                    img.setBounds( 0, 0, 130, 130 );  // set the image size
+                    //txtVw.setCompoundDrawables( img, null, null, null );
+                    btn_MarkeBayer.setCompoundDrawables(null, img, null, null);
+                    // btn_MarkeInter.setBackgroundResource(R.drawable.ic_inter_active);
+
+                    //markerPoints.
+
+                    for (Marker m : myMarkersPointsBayer) {
+                        m.setVisible(true);
+                    }
+
+                    toast = Toast.makeText(MyActivity, "Activado puntos de Bayer", Toast.LENGTH_LONG);
+                    toast.show();
+                } else {
+
+                    Drawable img = MyActivity.getResources().getDrawable( R.drawable.ic_bayer_desactive);
+                    img.setBounds( 0, 0, 130, 130 );  // set the image size
+                    //txtVw.setCompoundDrawables( img, null, null, null );
+                    btn_MarkeBayer.setCompoundDrawables(null,img,null,null);
+                    //btn_MarkeInter.setBackgroundResource(R.drawable.ic_inter_desactive);
+
+                    for (Marker m : myMarkersPointsBayer) {
+                        m.setVisible(false);
+                    }
+                    toast = Toast.makeText(MyActivity, "", Toast.LENGTH_LONG);
+                    toast = Toast.makeText(MyActivity, "Desactivado puntos de Bayer", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+                isPressedBayer = !isPressedBayer;
+            }
+        });
 
         showpDialog();
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST , GlobalConstant.dominio + "/JsonRoadsMap" ,params,
@@ -276,41 +279,43 @@ public class MapaRuta extends FragmentActivity {
                                     for (int i = 0; i < ObjJson.length(); i++) {
                                         try {
                                             JSONObject obj = ObjJson.getJSONObject(i);
-//                                            if(obj.getInt("company_id") == 12 ){
-//                                                myMarkersPointsInterbank.add(map.addMarker(new MarkerOptions()
-//                                                        .position(new LatLng(Double.valueOf(obj.getString("latitude")), Double.valueOf(obj.getString("longitude"))))
-//                                                        .title("Shop")
-//                                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_interbank))
-//                                                        .title(obj.getString("fullname"))));
-//                                            }
-
+                                           // markerPoints.add(new LatLng(Double.valueOf(obj.getString("latitude")), Double.valueOf(obj.getString("longitude"))));
                                             if(obj.getInt("company_id") == GlobalConstant.company_id){
-                                                myMarkersPointsBayer.add(map.addMarker(new MarkerOptions()
+                                                myMarkersPointsInterbank.add(map.addMarker(new MarkerOptions()
                                                         .position(new LatLng(Double.valueOf(obj.getString("latitude")), Double.valueOf(obj.getString("longitude"))))
                                                         .title("Shop")
                                                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_interbank))
                                                         .title(obj.getString("fullname"))));
                                             }
 
-//                                            if(obj.getInt("company_id") == 13 ){
-//                                                myMarkersPointsAlicorp.add(map.addMarker(new MarkerOptions()
-//                                                        .position(new LatLng(Double.valueOf(obj.getString("latitude")), Double.valueOf(obj.getString("longitude"))))
-//                                                        .title("Shop")
-//                                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_bayer))
-//                                                        .title(obj.getString("fullname"))));
-//                                            }
+
+                                            if(obj.getInt("company_id") == 16){
+                                                myMarkersPointsBayer.add(map.addMarker(new MarkerOptions()
+                                                        .position(new LatLng(Double.valueOf(obj.getString("latitude")), Double.valueOf(obj.getString("longitude"))))
+                                                        .title("Shop")
+                                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_bayer))
+                                                        .title(obj.getString("fullname"))));
+                                            }
+
+                                            if(obj.getInt("company_id") == 3 ){
+                                                myMarkersPointsAlicorp.add(map.addMarker(new MarkerOptions()
+                                                        .position(new LatLng(Double.valueOf(obj.getString("latitude")), Double.valueOf(obj.getString("longitude"))))
+                                                        .title("Shop")
+                                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_alicorp))
+                                                        .title(obj.getString("fullname"))));
+                                            }
 
 
-//                                            markerPoints.add(new LatLng(Double.valueOf(obj.getString("latitude")), Double.valueOf(obj.getString("longitude"))));
-//                                            // Crear MarkerOptions
+                                            // Crear MarkerOptions
 //                                            options = new MarkerOptions();
 //                                            // Ajuste de la posición del marcador
 //                                            options.position(new LatLng(Double.valueOf(obj.getString("latitude")), Double.valueOf(obj.getString("longitude"))));
-//                                            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+//                                            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_interbank));
+//                                            //options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 //                                            options.title(obj.getString("fullname"));
 //                                            //Añadir nuevo marcador para la API V2 Google Map Android
 //                                            map.addMarker(options);
-//
+
                                             lat = Double.valueOf(obj.getString("latitude")) ;
                                             lon = Double.valueOf(obj.getString("longitude"));
                                         } catch (JSONException e) {
@@ -342,80 +347,6 @@ public class MapaRuta extends FragmentActivity {
 
         AppController.getInstance().addToRequestQueue(jsObjRequest);
 
-
-        // Configuración onclick detector de eventos para el mapa
-//        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-//            @Override
-//            public void onMapClick(LatLng point) {
-//                //Ya 10 localidades con 8 puntos de referencia y 1 punto de inicio y 1 ubicación final.
-//                // Hasta 8 puntos de ruta son permitidos en una consulta para los usuarios no comerciales
-//                if (markerPoints.size() >= 10) {
-//                    return;
-//                }
-//
-//                // Adición de un nuevo elemento a la ArrayList
-//                markerPoints.add(point);
-//
-//                // Crear MarkerOptions
-//                MarkerOptions options = new MarkerOptions();
-//
-//                // Ajuste de la posición del marcador
-//                options.position(point);
-//
-//                /**
-//                 * Para la ubicación de inicio, el color del marcador es verde y
-//                 * Para la ubicación final, el color del marcador es ROJO y
-//                 * Para el resto de los marcadores, el color es AZURE
-//                 */
-//                if (markerPoints.size() == 1) {
-//                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-//                } else if (markerPoints.size() == 2) {
-//                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-//                } else {
-//                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-//                }
-//
-//                //Añadir nuevo marcador para la API V2 Google Map Android
-//                map.addMarker(options);
-//            }
-//        });
-
-        // El mapa se borrará en la pulsación larga
-//        map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-//
-//            @Override
-//            public void onMapLongClick(LatLng point) {
-//                // Elimina todos los puntos del mapa de Google
-//                map.clear();
-//
-//                // Elimina todos los puntos en el ArrayList
-//                markerPoints.clear();
-//            }
-//        });
-
-
-
-
-        // Haga clic en controlador de eventos para el botón btn_draw
-//        btnDraw.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                // Checks, whether start and end locations are captured
-//                if (markerPoints.size() >= 2) {
-//                    LatLng origin = markerPoints.get(0);
-//                    LatLng dest = markerPoints.get(1);
-//
-//                    // Getting URL to the Google Directions API
-//                    String url = getDirectionsUrl(origin, dest);
-//
-//                    DownloadTask downloadTask = new DownloadTask();
-//
-//                    // Start downloading json data from Google Directions API
-//                    downloadTask.execute(url);
-//                }
-//            }
-//        });
     }
 
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
@@ -625,3 +556,4 @@ public class MapaRuta extends FragmentActivity {
             pDialog.dismiss();
     }
 }
+

@@ -81,29 +81,5 @@
                 style="@style/BottonBase" />
         </LinearLayout>
     </LinearLayout>
-    <!--<LinearLayout-->
-        <!--android:id="@+id/buttonbar"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="horizontal"-->
-        <!--android:layout_alignParentBottom="true">-->
-        <!--<Button-->
-            <!--android:id="@+id/btLlamar"-->
-            <!--style="@style/BottonButton"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:drawableTop="@drawable/ic_phono"-->
-            <!--android:text="@string/central"-->
-            <!--/>-->
-        <!--<Button-->
-            <!--android:id="@+id/btUbicar"-->
-            <!--style="@style/BottonButton"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:drawableTop="@drawable/ic_marker_map"-->
-            <!--android:text="@string/ubicacion"-->
-            <!--/>-->
-    <!--</LinearLayout>-->
+
 </LinearLayout>

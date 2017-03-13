@@ -4,10 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
+
 import com.dataservicios.ttauditibk.LoginActivity;
 
 import java.util.HashMap;
-
 
 /**
  * Created by usuario on 19/01/2015.
@@ -15,10 +15,13 @@ import java.util.HashMap;
 public class SessionManager {
     // Preferencias compartidas
     SharedPreferences pref;
+
     //Editor de preferencias compartidas
     SharedPreferences.Editor editor;
+
     // Context
     Context _context;
+
     // Modo pref compartido
     int PRIVATE_MODE = 0;
 

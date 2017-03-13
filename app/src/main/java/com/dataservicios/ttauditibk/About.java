@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+
 import com.dataservicios.ttauditibk.util.GlobalConstant;
 import com.dataservicios.ttauditibk.util.JSONParser;
 
@@ -25,7 +26,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Created by Jaime Eduardo on 13/11/2015.
  */
@@ -33,7 +33,7 @@ public class About extends Activity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private Activity MyActivity;
     private Button bt_Salir;
-    private TextView tv_version,tv_version_android, tv_log;
+    private TextView tv_version, tv_log,tv_version_android;
     LinearLayout ly_ProgresBar;
     String cadena="";
 
@@ -49,6 +49,7 @@ public class About extends Activity {
         tv_log = (TextView) findViewById(R.id.tvLog);
         tv_version = (TextView) findViewById(R.id.tvVersion);
         tv_version_android = (TextView) findViewById(R.id.tvVersionAndroid);
+
         bt_Salir = (Button) findViewById(R.id.cbSalir);
 
 
@@ -64,9 +65,9 @@ public class About extends Activity {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        // String textLog;
+       // String textLog;
         //textLog =  String.valueOf(R.string.version_text) ;
-        //tv_log.setText(R.string.version_text);
+       // tv_log.setText(R.string.version_text);
         //tv_log.setText(Html.fromHtml(textLog));
         bt_Salir.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,7 +111,6 @@ public class About extends Activity {
 //                e.printStackTrace();
 //            }
 
-
             jsonVersion(GlobalConstant.company_id,GlobalConstant.type_aplication);
             return null;
         }
@@ -149,7 +149,7 @@ public class About extends Activity {
 
                             //cadena =   String.valueOf(birthDate) + " " +  version + " " + content + System.getProperty ("line.separator") + cadena;
                             cadena =   Fecha.substring(0,10) + "  (Ver. " +  version + ") " + content + System.getProperty ("line.separator") + cadena;
-                           // tv_log.setText(String.valueOf(birthDate) + " " +  version + " " + content  );
+                            // tv_log.setText(String.valueOf(birthDate) + " " +  version + " " + content  );
 
 
 
@@ -159,7 +159,7 @@ public class About extends Activity {
                         }
                     }
 
-                   // Log.d(LOG_TAG, String.valueOf(db.getAllAudits()));
+                    // Log.d(LOG_TAG, String.valueOf(db.getAllAudits()));
                 }
             }else{
                 Log.d(LOG_TAG, json.getString("message"));

@@ -9,10 +9,9 @@ import android.support.annotation.Nullable;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.dataservicios.ttauditibk.Model.PhoneDetail;
-import com.dataservicios.ttauditibk.Model.User;
+import com.dataservicios.ttauditibk.model.PhoneDetail;
+import com.dataservicios.ttauditibk.model.User;
 import com.dataservicios.ttauditibk.Repositories.UserRepo;
-import com.dataservicios.ttauditibk.SQLite.DatabaseHelper;
 import com.dataservicios.ttauditibk.app.AppController;
 import com.dataservicios.ttauditibk.util.AuditUtil;
 import com.dataservicios.ttauditibk.util.Connectivity;

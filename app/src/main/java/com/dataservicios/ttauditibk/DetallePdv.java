@@ -13,7 +13,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,9 +27,14 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.dataservicios.ttauditibk.Model.Audit;
-import com.dataservicios.ttauditibk.SQLite.DatabaseHelper;
+
 import com.dataservicios.ttauditibk.app.AppController;
+import com.dataservicios.ttauditibk.interbank.BimLetreroActivity;
+import com.dataservicios.ttauditibk.interbank.EvaluacionTransaccion;
+import com.dataservicios.ttauditibk.interbank.EvaluacionTrato;
+import com.dataservicios.ttauditibk.interbank.UsoIterbankAgente;
+import com.dataservicios.ttauditibk.interbank.informacion;
+import com.dataservicios.ttauditibk.interbank.introduccion;
 import com.dataservicios.ttauditibk.util.AuditUtil;
 import com.dataservicios.ttauditibk.util.GPSTracker;
 import com.dataservicios.ttauditibk.util.GlobalConstant;
@@ -50,7 +54,6 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
 
@@ -58,7 +61,7 @@ import java.util.HashMap;
  * Created by usuario on 14/01/2015.
  */
 public class DetallePdv extends FragmentActivity {
-   // private static final String URL_PDVS = "http://www.dataservicios.com/webservice/pdvs.php";
+    private static final String URL_PDVS = "http://www.dataservicios.com/webservice/pdvs.php";
     private GoogleMap map;
     // Log tag
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -75,45 +78,39 @@ public class DetallePdv extends FragmentActivity {
 
     private JSONObject params,paramsCordenadas;
     private SessionManager session;
-    private String email_user, user_id, name_user;
-    private int idPDV, road_id, idCompany;
+    private String email_user, id_user, name_user;
+    private int idPDV, IdRuta, idCompany, store_id;
     private String fechaRuta;
-    EditText pdvs1,pdvsAuditados1,porcentajeAvance1;
-    TextView tvStoreId,tvTienda,tvDireccion ,tvDistrito, tvReferencia , tvPDVSdelDia, tvTelephone,tvContact ; //tvLong, tvLat;
-    Button btGuardarLatLong, btCerrarAudit, btEditAddress , btEditTelephone;
-    Activity MyActivity = (Activity) this;
+    private  EditText pdvs1,pdvsAuditados1,porcentajeAvance1;
+    private  TextView tvTienda,tvDireccion , tv_Distrito, tv_Ejecutivo ,  tvPDVSdelDía , tvLong, tvLat, tv_CodClient, tv_Referencia;
+    private  Button btGuardarLatLong, btCerrarAudit;
+    private  Activity myActivity = (Activity) this;
+    private String typeStore ;
 
-    Audit mAudit ;
-    GPSTracker gpsTracker;
-
-    private DatabaseHelper db;
+    private  GPSTracker gpsTracker;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.detalle_pdv);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setTitle("Detalle de PDV");
-        overridePendingTransition(R.anim.anim_slide_in_left, R.anim.anim_slide_out_left);
-        session = new SessionManager(MyActivity);
+        overridePendingTransition(R.anim.anim_slide_in_left,R.anim.anim_slide_out_left);
+        session = new SessionManager(myActivity);
         map =((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
         pdvs1 = (EditText)  findViewById(R.id.etPDVS);
         pdvsAuditados1 = (EditText)  findViewById(R.id.etPDVSAuditados);
         porcentajeAvance1 = (EditText)  findViewById(R.id.etPorcentajeAvance);
         tvTienda = (TextView)  findViewById(R.id.tvTienda);
-        tvStoreId = (TextView)  findViewById(R.id.tvStoreId);
         tvDireccion = (TextView)  findViewById(R.id.tvDireccion);
-        tvReferencia = (TextView)  findViewById(R.id.tvReferencia);
-        tvDistrito= (TextView)  findViewById(R.id.tvDistrito);
-        tvPDVSdelDia = (TextView)  findViewById(R.id.tvPDVSdelDia);
-        tvTelephone = (TextView)  findViewById(R.id.tvTelephone);
-        tvContact = (TextView)  findViewById(R.id.tvContact);
+        tv_Distrito = (TextView)  findViewById(R.id.tvDistrito);
+        tv_Ejecutivo = (TextView)  findViewById(R.id.tvEjecutivo);
+        tvPDVSdelDía = (TextView)  findViewById(R.id.tvPDVSdelDía);
+        tv_CodClient = (TextView)  findViewById(R.id.tvCodCliente);
+        tv_Referencia = (TextView)  findViewById(R.id.tvReferencia);
 
         btGuardarLatLong = (Button) findViewById(R.id.btGuardarLatLong);
         btCerrarAudit = (Button) findViewById(R.id.btCerrarAuditoria);
-        btEditAddress = (Button) findViewById(R.id.btEditAddress);
-        btEditTelephone = (Button) findViewById(R.id.btEditTelephone);
         // get user data from session
         HashMap<String, String> user = session.getUserDetails();
         // name
@@ -121,32 +118,34 @@ public class DetallePdv extends FragmentActivity {
         // email
         email_user = user.get(SessionManager.KEY_EMAIL);
         // id
-        user_id = user.get(SessionManager.KEY_ID_USER);
-
-        db = new DatabaseHelper(getApplicationContext());
-
-        gpsTracker = new GPSTracker(MyActivity);
+        id_user = user.get(SessionManager.KEY_ID_USER);
 
         pDialog = new ProgressDialog(this);
-        pDialog.setMessage(getString(R.string.text_loading));
+        pDialog.setMessage("Cargando...");
         pDialog.setCancelable(false);
 
+        gpsTracker = new GPSTracker(myActivity);
 
 
         btGuardarLatLong.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                paramsCordenadas = new JSONObject();
-                try {
-                    paramsCordenadas.put("latitud", lat);
-                    paramsCordenadas.put("longitud", lon);
-                    paramsCordenadas.put("id", idPDV);
+                btGuardarLatLong.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(gpsTracker.canGetLocation()){
+                            latitude = gpsTracker.getLatitude();
+                            longitude = gpsTracker.getLongitude();
+                        }else{
+                            gpsTracker.showSettingsAlert();
+                            return;
+                        }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                guardarCoordenadas();
+                        new saveLatLongStore().execute();
+
+                    }
+                });
             }
         });
 
@@ -155,7 +154,7 @@ public class DetallePdv extends FragmentActivity {
             public void onClick(View v) {
 
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity);
+                AlertDialog.Builder builder = new AlertDialog.Builder(myActivity);
                 builder.setTitle("Guardar Encuesta");
                 builder.setMessage("Está seguro de cerrar la auditoría: ");
                 builder.setPositiveButton("Si", new DialogInterface.OnClickListener()
@@ -169,8 +168,23 @@ public class DetallePdv extends FragmentActivity {
                         String strDate = sdf.format(c.getTime());
                         GlobalConstant.fin = strDate;
 
-                        new loadPoll().execute();
+                        JSONObject paramsCloseAudit = new JSONObject();
+                        try {
+                            paramsCloseAudit.put("latitud_close", lat);
+                            paramsCloseAudit.put("longitud_close", lon);
+                            paramsCloseAudit.put("latitud_open", GlobalConstant.latitude_open);
+                            paramsCloseAudit.put("longitud_open",  GlobalConstant.latitude_open);
+                            paramsCloseAudit.put("tiempo_inicio",  GlobalConstant.inicio);
+                            paramsCloseAudit.put("tiempo_fin",  GlobalConstant.fin);
+                            paramsCloseAudit.put("tduser", id_user);
+                            paramsCloseAudit.put("id", idPDV);
+                            paramsCloseAudit.put("idruta", IdRuta);
+                            paramsCloseAudit.put("company_id", GlobalConstant.company_id);
+                            insertaTiemporAuditoria(paramsCloseAudit);
 
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         dialog.dismiss();
 
                     }
@@ -192,82 +206,79 @@ public class DetallePdv extends FragmentActivity {
             }
         });
 
-        btEditAddress.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent;
-                Bundle argRuta = new Bundle();
-                argRuta.clear();
-                //argRuta.putInt("company_id", GlobalConstant.company_id);
-                argRuta.putInt("store_id",idPDV);
-                argRuta.putString("address", tvDireccion.getText().toString());
-                argRuta.putString("reference", tvReferencia.getText().toString());
-                argRuta.putString("storeName", tvTienda.getText().toString());
-
-                intent = new Intent(MyActivity, EditAddressActivity.class);
-                intent.putExtras(argRuta);
-                startActivity(intent);
-            }
-        });
-
-        btEditTelephone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent;
-                Bundle argRuta = new Bundle();
-                argRuta.clear();
-                //argRuta.putInt("company_id", GlobalConstant.company_id);
-                argRuta.putInt("store_id",idPDV);
-                argRuta.putString("contact", tvContact.getText().toString());
-                argRuta.putString("telephone", tvTelephone.getText().toString());
-
-                intent = new Intent(MyActivity, ContactoTelefonoActivity.class);
-                intent.putExtras(argRuta);
-                startActivity(intent);
-
-            }
-        });
 
 
         linearLayout = (ViewGroup) findViewById(R.id.lyControles);
-
+//        Button MyBoton = (Button) findViewById(R.id.button1);
+//        MyBoton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent("com.dataservicios.systemauditor.LISTGENTE");
+//                startActivity(intent);
+//            }
+//        });
+        //Añadiendo parametros para pasar al Json por metodo POST
         params = new JSONObject();
-
+        //Recogiendo paramentro del anterior Activity
+        //Bundle bundle = savedInstanceState.getArguments();
         Bundle bundle = getIntent().getExtras();
         idPDV= bundle.getInt("idPDV");
-        //road_id= bundle.getInt("idRuta");
-        road_id= bundle.getInt("road_id");
+        store_id = bundle.getInt("idPDV");
+        IdRuta= bundle.getInt("idRuta");
         fechaRuta= bundle.getString("fechaRuta");
+        tvPDVSdelDía.setText(fechaRuta);
 
-
-        tvPDVSdelDia.setText(fechaRuta);
-
-
-//        db.deletePresenseProductForStoreId(idPDV);
-//        db.deletePresensePublicitytForStoreId(idPDV);
-//        db.updatePublicityDesactive();
 
         try {
             params.put("id", idPDV);
-            params.put("idRoute", road_id);
-            params.put("company_id", GlobalConstant.company_id);
+            params.put("idRoute", IdRuta);
             //Enviando
 
-            params.put("iduser", user_id);
+            params.put("iduser", id_user);
+            params.put("company_id", GlobalConstant.company_id);
 
             //params.put("id_pdv",idPDV);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         cargaPdvs();
-        //cargarAditorias();
-        cargarAditorias();
+        //cargarAditoriasInterbank();
+        cargarAditoriasInterbank();
 
     }
 
 
 
+    class saveLatLongStore extends AsyncTask<Void , Integer , Boolean> {
 
+        @Override
+        protected void onPreExecute() {
+
+            pDialog.show();
+            super.onPreExecute();
+        }
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // TODO Auto-generated method stub
+
+            if(!AuditUtil.saveLatLongStore(store_id,latitude,longitude)) return false;
+
+            return true;
+        }
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        protected void onPostExecute(Boolean result) {
+            // dismiss the dialog once product deleted
+
+            if (result){
+                Toast.makeText(myActivity , R.string.message_save_gps_success, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(myActivity , R.string.message_save_gps_error, Toast.LENGTH_LONG).show();
+            }
+            hidepDialog();
+        }
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -292,6 +303,7 @@ public class DetallePdv extends FragmentActivity {
         if (pDialog.isShowing())
             pDialog.dismiss();
     }
+
     private void cargaPdvs(){
         showpDialog();
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST , GlobalConstant.dominio + "/JsonRoadDetail" ,params,
@@ -317,15 +329,13 @@ public class DetallePdv extends FragmentActivity {
                                         try {
                                             JSONObject obj = ObjJson.getJSONObject(i);
                                             tvTienda.setText(obj.getString("fullname"));
-
+                                           // tvDireccion.setText(obj.getString("address"));
                                             tvDireccion.setText(obj.getString("address"));
-                                            tvDistrito.setText(obj.getString("district"));
-                                            tvReferencia.setText(obj.getString("urbanization"));
-                                            tvStoreId.setText(String.valueOf(idPDV));
-                                            tvContact.setText(obj.getString("owner"));
-                                            tvTelephone.setText(obj.getString("telephone"));
-                                            //tvLat.setText(obj.getString("latitude"));
-                                           // tvLong.setText(obj.getString("longitude"));
+                                            tv_Distrito.setText(obj.getString("district"));
+                                            tv_Ejecutivo.setText(obj.getString("ejecutivo"));
+                                            tv_CodClient.setText(obj.getString("codclient"));
+                                            tv_Referencia.setText(obj.getString("urbanization"));
+                                            typeStore = obj.getString("comment") ;
 
                                             latitude= Double.valueOf(obj.getString("latitude"))  ;
                                             longitude= Double.valueOf(obj.getString("longitude"));
@@ -333,9 +343,10 @@ public class DetallePdv extends FragmentActivity {
                                             map.setMyLocationEnabled(true);
                                             MarkerNow = map.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("Mi Ubicación")
                                                     //.snippet("Population: 4,137,400")
-                                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_interbank)));
+                                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_map)));
                                             CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(latitude, longitude)).zoom(15).build();
                                             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
                                             // Establezco un listener para ver cuando cambio de posicion
                                             map.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
                                                 public void onMyLocationChange(Location pos) {
@@ -347,7 +358,7 @@ public class DetallePdv extends FragmentActivity {
                                                     //CameraUpdate cam = CameraUpdateFactory.newLatLng(new LatLng(lat, lon));
                                                     //map.moveCamera(cam);
                                                     // Notifico con un mensaje al usuario de su Lat y Lon
-                                                    //Toast.makeText(MyActivity,"Lat: " + lat + "\nLon: " + lon, Toast.LENGTH_SHORT).show();
+                                                    //Toast.makeText(myActivity,"Lat: " + lat + "\nLon: " + lon, Toast.LENGTH_SHORT).show();
                                                 }
                                             });
 
@@ -379,8 +390,7 @@ public class DetallePdv extends FragmentActivity {
         AppController.getInstance().addToRequestQueue(jsObjRequest);
     }
 
-
-    private void cargarAditorias(){
+    private void cargarAditoriasInterbank(){
         showpDialog();
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST ,  GlobalConstant.dominio + "/JsonAuditsForStore" ,params,
                 new Response.Listener<JSONObject>()
@@ -396,99 +406,139 @@ public class DetallePdv extends FragmentActivity {
                             idCompany =response.getInt("company");
                             if (success == 1) {
                                 JSONArray agentesObjJson;
-                                //db.deleteAllAudits();
                                 agentesObjJson = response.getJSONArray("audits");
                                 // looping through All Products
                                 for (int i = 0; i < agentesObjJson.length(); i++) {
                                     JSONObject obj = agentesObjJson.getJSONObject(i);
                                     // Storing each json item in variable
-                                    String audit_id = obj.getString("id");
+                                    String idAuditoria = obj.getString("id");
                                     String auditoria = obj.getString("fullname");
-
                                     int status = obj.getInt("state");
-                                    // audit_id = 0 ;
-                                    //int audit_id = Integer.valueOf(audit_id);
+                                    bt = new Button(myActivity);
+                                    LinearLayout ly = new LinearLayout(myActivity);
+                                    ly.setOrientation(LinearLayout.VERTICAL);
+                                    ly.setId(i+'_');
 
-                                            bt = new Button(MyActivity);
-                                            LinearLayout ly = new LinearLayout(MyActivity);
-                                            ly.setOrientation(LinearLayout.VERTICAL);
-                                            ly.setId(i+'_');
-                                            LayoutParams params = new LayoutParams(
-                                                    LayoutParams.FILL_PARENT,
-                                                    LayoutParams.FILL_PARENT
-                                            );
-                                            params.setMargins(0, 10, 0, 10);
-                                            ly.setLayoutParams(params);
-                                            bt.setBackgroundColor(getResources().getColor(R.color.color_base));
-                                            bt.setTextColor(getResources().getColor(R.color.counter_text_bg));
-                                            bt.setText(auditoria);
 
-                                            if(status==1) {
-                                                Drawable img = MyActivity.getResources().getDrawable( R.drawable.ic_check_on);
-                                                img.setBounds( 0, 0, 60, 60 );  // set the image size
-                                                bt.setCompoundDrawables( img, null, null, null );
-                                                bt.setBackgroundColor(getResources().getColor(R.color.color_bottom_buttom_pressed));
-                                                bt.setTextColor(getResources().getColor(R.color.color_base));
-                                                bt.setEnabled(false);
-                                            }  else {
-                                                Drawable img = MyActivity.getResources().getDrawable( R.drawable.ic_check_off);
-                                                img.setBounds( 0, 0, 60, 60 );  // set the image size
-                                                bt.setCompoundDrawables( img, null, null, null );
+                                    LayoutParams params = new LayoutParams(
+                                            LayoutParams.FILL_PARENT,
+                                            LayoutParams.FILL_PARENT
+                                    );
+
+
+                                    params.setMargins(0, 10, 0, 10);
+                                    ly.setLayoutParams(params);
+                                    bt.setBackgroundColor(getResources().getColor(R.color.color_base));
+                                    bt.setTextColor(getResources().getColor(R.color.color_fondo));
+                                    bt.setText(auditoria);
+
+                                    if(status==1) {
+                                        Drawable img = myActivity.getResources().getDrawable( R.drawable.ic_check_on);
+                                        img.setBounds( 0, 0, 60, 60 );  // set the image size
+                                        bt.setCompoundDrawables( img, null, null, null );
+                                        bt.setBackgroundColor(getResources().getColor(R.color.color_bottom_buttom_pressed));
+                                        bt.setTextColor(getResources().getColor(R.color.color_base));
+                                        bt.setEnabled(false);
+                                    }  else {
+                                        Drawable img = myActivity.getResources().getDrawable( R.drawable.ic_check_off);
+                                        img.setBounds( 0, 0, 60, 60 );  // set the image size
+                                        bt.setCompoundDrawables( img, null, null, null );
+                                    }
+                                    if(GlobalConstant.global_close_audit==1){
+
+                                        bt.setBackgroundColor(getResources().getColor(R.color.color_bottom_buttom_pressed));
+                                        bt.setTextColor(getResources().getColor(R.color.color_base));
+                                        bt.setEnabled(false);
+                                    }
+                                    //bt.setBackground();
+                                    bt.setId(Integer.valueOf(idAuditoria));
+                                    bt.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+                                    bt.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            // Toast.makeText(getActivity(), j  , Toast.LENGTH_LONG).show();
+                                            Button button1 = (Button) v;
+                                            String texto = button1.getText().toString();
+                                            //Toast toast=Toast.makeText(getActivity(), selected, Toast.LENGTH_SHORT);
+                                            Toast toast;
+                                            toast = Toast.makeText(myActivity, texto + ":" +  button1.getId(), Toast.LENGTH_LONG);
+                                            toast.show();
+                                            //int idBoton = Integer.valueOf(idAuditoria);
+                                            Intent intent;
+                                            int idAuditoria = button1.getId();
+
+                                            Bundle argRuta = new Bundle();
+                                            argRuta.clear();
+                                            argRuta.putInt("company_id",idCompany);
+                                            argRuta.putInt("idPDV",idPDV);
+                                            argRuta.putInt("idRuta", IdRuta );
+                                            argRuta.putInt("store_id", idPDV );
+                                            argRuta.putInt("road_id", IdRuta );
+                                            argRuta.putString("fechaRuta",fechaRuta);
+                                            argRuta.putInt("idAuditoria",idAuditoria);
+                                            argRuta.putInt("audit_id",idAuditoria);
+
+                                            switch (idAuditoria) {
+                                                case 7:
+//                                                    intent = new Intent("com.dataservicios.systemauditor.ENCUESTA");
+//                                                    startActivity(intent);
+
+                                                    //intent = new Intent("com.dataservicios.systemauditor.INTRODUCCION");
+                                                    intent = new Intent(myActivity,introduccion.class);
+                                                    intent.putExtras(argRuta);
+                                                    startActivity(intent);
+
+                                                    break;
+                                                case 8:
+//                                                    intent = new Intent("com.dataservicios.systemauditor.ENCUESTA");
+//                                                    startActivity(intent);
+
+                                                    //intent = new Intent("com.dataservicios.systemauditor.USOIBK");
+                                                    intent = new Intent(myActivity,UsoIterbankAgente.class);
+                                                    intent.putExtras(argRuta);
+                                                    startActivity(intent);
+
+                                                    break;
+                                                case 9:
+                                                    //intent = new Intent("com.dataservicios.systemauditor.EVTRANSACCION");
+                                                    intent = new Intent(myActivity,EvaluacionTransaccion.class);
+                                                    intent.putExtras(argRuta);
+                                                    startActivity(intent);
+                                                    break;
+                                                case 10:
+                                                    //intent = new Intent("com.dataservicios.systemauditor.EVTRATO");
+                                                    intent = new Intent(myActivity,EvaluacionTrato.class);
+                                                    intent.putExtras(argRuta);
+                                                    startActivity(intent);
+                                                    break;
+
+                                                case 11:
+                                                    //intent = new Intent("com.dataservicios.systemauditor.INFO");
+                                                    intent = new Intent(myActivity,informacion.class);
+                                                    intent.putExtras(argRuta);
+                                                    startActivity(intent);
+                                                    break;
+                                                case 52:
+
+                                                    intent = new Intent(myActivity,BimLetreroActivity.class);
+                                                    intent.putExtras(argRuta);
+                                                    startActivity(intent);
+                                                    break;
                                             }
-                                            if(GlobalConstant.global_close_audit==1){
+                                        }
+                                    });
+                                    ly.addView(bt);
+                                    linearLayout.addView(ly);
 
-                                                bt.setBackgroundColor(getResources().getColor(R.color.color_bottom_buttom_pressed));
-                                                bt.setTextColor(getResources().getColor(R.color.color_base));
-                                                bt.setEnabled(false);
-                                            }
-                                            //bt.setBackground();
-                                            bt.setId(Integer.valueOf(audit_id));
-                                            bt.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-                                            bt.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
+                                    if(!typeStore.equals("BIM") && idAuditoria.equals("52")){
 
-                                                    Button button1 = (Button) v;
-                                                    String texto = button1.getText().toString();
-                                                    //Toast toast=Toast.makeText(getActivity(), selected, Toast.LENGTH_SHORT);
-                                                    Toast.makeText(MyActivity, texto + ":" + button1.getId(), Toast.LENGTH_LONG).show();
+                                        bt.setVisibility(View.INVISIBLE);
 
-                                                    Intent intent;
-                                                    int audit_id = button1.getId();
-
-                                                    Bundle argRuta = new Bundle();
-                                                    argRuta.clear();
-                                                    argRuta.putInt("store_id",idPDV);
-                                                    argRuta.putInt("road_id", road_id );
-                                                    argRuta.putInt("audit_id",audit_id);
-
-                                                    switch (audit_id) {
-
-                                                        case 44:
-//                                                            intent = new Intent(MyActivity, StoreOpenClose.class);
-//                                                            intent.putExtras(argRuta);
-//                                                            startActivity(intent);
-                                                            break;
-                                                        case 1:
-//                                                            intent = new Intent(MyActivity, CategoriasSOD.class);
-//                                                            intent.putExtras(argRuta);
-//                                                            startActivity(intent);
-                                                            break;
-
-                                                        case 37:
-//                                                            intent = new Intent(MyActivity, ClientePerfecto.class);
-//                                                            intent.putExtras(argRuta);
-//                                                            startActivity(intent);
-                                                            break;
-
-                                                    }
-                                                }
-                                            });
-                                            ly.addView(bt);
-                                            linearLayout.addView(ly);
-
-
+                                    }
                                 }
+
+
+
                                 GlobalConstant.global_close_audit=0;
                             }
                         } catch (JSONException e) {
@@ -510,13 +560,10 @@ public class DetallePdv extends FragmentActivity {
 
     }
 
-
-    private void guardarCoordenadas(){
-
+    private void insertaTiemporAuditoria(JSONObject parametros) {
         showpDialog();
-
-
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST , GlobalConstant.dominio+"/updatePositionStore" ,paramsCordenadas,
+        //JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST , GlobalConstant.dominio + "/insertaTiempo" ,parametros,
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST , GlobalConstant.dominio + "/insertaTiempoNew" ,parametros,
                 new Response.Listener<JSONObject>()
                 {
                     @Override
@@ -529,26 +576,16 @@ public class DetallePdv extends FragmentActivity {
                             int success =  response.getInt("success");
                             if (success == 1) {
 //
-                                map.clear();
-                                MarkerNow = map.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title("Mi Ubicación")
-                                        //.snippet("Population: 4,137,400")
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_map)));
-//        Mostrando información del Market ni bien carga el mapa
-                                // MarkerNow.showInfoWindow();
-//        Ajuste de la cámara en el mayor nivel de zoom es posible que incluya los límites
-                                map.setMyLocationEnabled(true);
-                                CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(lat, lon)).zoom(15).build();
-                                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-                                //tvLat.setText(String.valueOf(lat));
-                                //tvLong.setText(String.valueOf(lon));
-
+                                Log.d("DATAAAA", response.toString());
+                                Toast.makeText(myActivity, "Se ", Toast.LENGTH_LONG).show();
+                                finish();
+                            } else {
+                                Toast.makeText(myActivity, "No se ha podido enviar la información, intentelo mas tarde ", Toast.LENGTH_LONG).show();
                             }
                         } catch (JSONException e) {
+                            Toast.makeText(myActivity, "No se ha podido enviar la información, intentelo mas tarde ", Toast.LENGTH_LONG).show();
                             e.printStackTrace();
                         }
-
-                        hidepDialog();
                     }
                 },
                 new Response.ErrorListener() {
@@ -560,62 +597,22 @@ public class DetallePdv extends FragmentActivity {
                 }
         );
 
+
         AppController.getInstance().addToRequestQueue(jsObjRequest);
 
+
     }
 
-    class loadPoll extends AsyncTask<Void , Integer , Boolean> {
-        /**
-         * Antes de comenzar en el hilo determinado, Mostrar progresión
-         * */
-        boolean failure = false;
-        @Override
-        protected void onPreExecute() {
-            //tvCargando.setText("Cargando Product...");
-            pDialog.show();
-            super.onPreExecute();
-        }
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO Auto-generated method stub
 
-
-
-                String time_close = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").format(new Date());
-                mAudit = new Audit();
-                mAudit.setCompany_id(GlobalConstant.company_id);
-                mAudit.setStore_id(idPDV);
-                mAudit.setId(0);
-                mAudit.setRoute_id(road_id);
-                mAudit.setUser_id(Integer.valueOf(user_id));
-                mAudit.setLatitude_close(String.valueOf(gpsTracker.getLatitude()));
-                mAudit.setLongitude_close(String.valueOf(gpsTracker.getLongitude()));
-                mAudit.setLatitude_open(String.valueOf(GlobalConstant.latitude_open));
-                mAudit.setLongitude_open(String.valueOf(GlobalConstant.longitude_open));
-                mAudit.setTime_open(GlobalConstant.inicio);
-                mAudit.setTime_close(time_close);
-
-
-                if(!AuditUtil.closeAuditRoadAll(mAudit)) return false;
-
-
-            return true;
-        }
-        /**
-         * After completing background task Dismiss the progress dialog
-         * **/
-        protected void onPostExecute(Boolean result) {
-            // dismiss the dialog once product deleted
-
-            if (result){
-                    finish();
-            } else {
-                Toast.makeText(MyActivity , "No se pudo guardar la información intentelo nuevamente", Toast.LENGTH_LONG).show();
-            }
-            hidepDialog();
-        }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
+//        Intent a = new Intent(this,PanelAdmin.class);
+//        //a.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        startActivity(a);
+        overridePendingTransition(R.anim.anim_slide_in_right,R.anim.anim_slide_out_right);
     }
-
 
     @Override
     public void onResume() {
@@ -633,23 +630,6 @@ public class DetallePdv extends FragmentActivity {
         startActivity(getIntent());
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            //preventing default implementation previous to android.os.Build.VERSION_CODES.ECLAIR
-            //Toast.makeText(MyActivity, "No se puede volver atras, los datos ya fueron guardado, para modificar pongase en contácto con el administrador", Toast.LENGTH_LONG).show();
-            onBackPressed();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-    @Override
-    public void onBackPressed() {
-        //Toast.makeText(MyActivity, "No se puede volver atras, los datos ya fueron guardado, para modificar póngase en contácto con el administrador", Toast.LENGTH_LONG).show();
-        super.onBackPressed();
-        this.finish();
 
-        overridePendingTransition(R.anim.anim_slide_in_right,R.anim.anim_slide_out_right);
-    }
 
 }

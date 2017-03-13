@@ -11,9 +11,9 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
-import com.dataservicios.ttauditibk.Model.Pdv;
 import com.dataservicios.ttauditibk.R;
 import com.dataservicios.ttauditibk.app.AppController;
+import com.dataservicios.ttauditibk.model.Pdv;
 
 import java.util.List;
 
@@ -61,26 +61,21 @@ public class PdvsAdapter extends BaseAdapter {
         TextView pdv = (TextView) convertView.findViewById(R.id.tvPdv);
         TextView direccion = (TextView) convertView.findViewById(R.id.tvDireccion);
         TextView distrito = (TextView) convertView.findViewById(R.id.tvDistrito);
-        TextView region = (TextView) convertView.findViewById(R.id.tvRegion);
         TextView storeId = (TextView) convertView.findViewById(R.id.tvStoreId);
-        TextView type = (TextView) convertView.findViewById(R.id.tvType);
-        TextView typeBodega = (TextView) convertView.findViewById(R.id.tvTypeBodega);
         ImageView imgStatus = (ImageView) convertView.findViewById(R.id.imgStatus);
         // getting ruta data for the row
         Pdv m = pdvItems.get(position);
         idPdv.setText(String.valueOf(m.getId()));
+        storeId.setText(String.valueOf(m.getId()));
+
         // thumbnail image
        // thumbNail.setImageUrl(m.getThumbnailUrl(), imageLoader);
         // rutaDia
         pdv.setText(m.getPdv());
         // pdvs
         direccion.setText( m.getDireccion());
+        // release year
         distrito.setText(m.getDistrito());
-        region.setText(m.getRegion());
-        type.setText(m.getType());
-        typeBodega.setText(m.getTypeBodega());
-
-        storeId.setText("ID: " + m.getId());
 
         if(m.getStatus()==0){
 
@@ -97,7 +92,10 @@ public class PdvsAdapter extends BaseAdapter {
 
         // Deshabilitando los items del adptador segun el statu
         if( pdvItems.get(position).getStatus()==1){
+
+
             return false;
+
         }
         return true;
     }

@@ -39,7 +39,7 @@
         android:layout_toRightOf="@+id/thumbnail"
         android:textSize="@dimen/rating" />
 
-
+    <!-- Genre -->
     <TextView
         android:id="@+id/tvDistrito"
         android:layout_width="fill_parent"
@@ -50,42 +50,12 @@
         android:textColor="@color/genre"
         android:textSize="@dimen/genre" />
 
-    <TextView
-        android:id="@+id/tvRegion"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvDistrito"
-        android:layout_marginTop="5dp"
-        android:layout_toRightOf="@+id/thumbnail"
-        android:textColor="@color/genre"
-        android:textSize="@dimen/genre" />
-
-    <TextView
-        android:id="@+id/tvType"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvRegion"
-        android:layout_marginTop="5dp"
-        android:layout_toRightOf="@+id/thumbnail"
-        android:textColor="@color/genre"
-        android:textSize="@dimen/genre" />
-
-
-    <TextView
-        android:id="@+id/tvTypeBodega"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvType"
-        android:layout_marginTop="5dp"
-        android:layout_toRightOf="@+id/thumbnail"
-        android:textColor="@color/genre"
-        android:textSize="@dimen/genre" />
 
     <TextView
         android:id="@+id/tvStoreId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvTypeBodega"
+        android:layout_below="@+id/tvDistrito"
         android:layout_marginTop="5dp"
         android:text=""
         android:layout_toRightOf="@+id/thumbnail"

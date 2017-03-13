@@ -19,8 +19,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Ruta del dÃ­a: 12/01/2015"
-                android:id="@+id/tvPDVSdelDia"
+                android:text="Ruta del día: 12/01/2015"
+                android:id="@+id/tvPDVSdelDía"
                 android:textSize="@dimen/general"
 
                 android:textAlignment="center"
@@ -101,29 +101,11 @@
                 android:editable="false" />
         </LinearLayout>
 
-        <!--<LinearLayout-->
-        <!--android:orientation="horizontal"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="56dp">-->
-
-        <!--<Button-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="MAPA DE RUTAS"-->
-        <!--android:id="@+id/btMapaRuta"-->
-        <!--style="@style/BottonBase" />-->
-        <!--</LinearLayout>-->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="56dp">
 
-            <!--<Button-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="MAPA DE RUTAS"-->
-            <!--android:id="@+id/btMapaRuta"-->
-            <!--style="@style/BottonBase" />-->
 
             <Button
                 android:id="@+id/btMapaRuta"
@@ -145,6 +127,7 @@
 
 
         </LinearLayout>
+
     </LinearLayout>
 
         <ListView

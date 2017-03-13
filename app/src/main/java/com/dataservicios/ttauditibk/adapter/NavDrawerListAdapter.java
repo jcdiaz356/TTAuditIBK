@@ -9,11 +9,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.dataservicios.ttauditibk.Model.NavDrawerItem;
+
 import com.dataservicios.ttauditibk.R;
+import com.dataservicios.ttauditibk.model.NavDrawerItem;
 
 import java.util.ArrayList;
-
 
 /**
  * Created by usuario on 24/11/2014.

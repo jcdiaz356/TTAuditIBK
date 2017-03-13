@@ -14,101 +14,76 @@ import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.dataservicios.ttauditibk.Repositories.UserRepo;
-import com.dataservicios.ttauditibk.SQLite.DatabaseHelper;
-import com.dataservicios.ttauditibk.util.ConexionInternet;
-
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class MainActivity extends Activity {
-    // Logcat tag
+    private static final String LOG_TAG = "Load Activity";
     private static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
-
     private int splashTime = 3000;
     private Thread thread;
-
-
     private ProgressBar mSpinner;
-    private TextView tvCargando, tv_Version ;
-    private ConexionInternet cnInternet ;
+    private TextView tv_version ;
     private Activity MyActivity;
-    //private JSONParser jsonParser;
-    // Database Helper
-    private DatabaseHelper db;
-    private UserRepo userRepo ;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         MyActivity = (Activity) this;
         mSpinner = (ProgressBar) findViewById(R.id.Splash_ProgressBar);
         mSpinner.setIndeterminate(true);
-        tvCargando = (TextView) findViewById(R.id.tvCargando);
-        tv_Version = (TextView) findViewById(R.id.tvVersion);
+        thread = new Thread(runable);
+        thread.start();
 
-        db = new DatabaseHelper(getApplicationContext());
-        userRepo = new UserRepo(getApplicationContext()) ;
 
-        PackageInfo pckInfo ;
+        tv_version = (TextView) findViewById(R.id.tvVersion);
+
+        PackageInfo pinfo;
         try {
-            pckInfo= getPackageManager().getPackageInfo(getPackageName(),0);
-            tv_Version.setText(pckInfo.versionName);
-
+            pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            String versionName = pinfo.versionName;
+            tv_version.setText("Ver. " + versionName);
+            //ET2.setText(versionNumber);
         } catch (PackageManager.NameNotFoundException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-
-        if (db.checkDataBase(MyActivity)){
-            mSpinner = (ProgressBar) findViewById(R.id.Splash_ProgressBar);
-            mSpinner.setIndeterminate(true);
-            //thread = new Thread(runable);
-            //thread.start();
-        }else{
-            userRepo.deleteAllUser();
-        }
-
-       if(checkAndRequestPermissions()) loadLoginActivity();
-
     }
-
-
     private void loadLoginActivity()
     {
         Intent intent = new Intent(MyActivity, LoginActivity.class);
         startActivity(intent);
         finish();
     }
-
     public Runnable runable = new Runnable() {
         public void run() {
-            try {
-                Thread.sleep(splashTime);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                Thread.sleep(splashTime);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
             try {
                 //startActivity(new Intent(MainActivity.this,LoginActivity.class));
                 //Intent intent = new Intent(MainActivity.this,LoginActivity.class);
-//                Intent intent = new Intent("com.dataservicios.systemauditor.LOGIN");
-//
-//                startActivity(intent);
-//                finish();
+               // Intent intent = new Intent("com.dataservicios.systemauditor.LOGIN");
 
-                loadLoginActivity();
+                //startActivity(intent);
+                //finish
+
+                Thread.sleep(splashTime);
+
             } catch (Exception e) {
                 // TODO: handle exception
+            } finally {
+                if(checkAndRequestPermissions()) loadLoginActivity();
             }
         }
     };
 
 
-//  Chequeando permisos de usuario Runtime
+    //  Chequeando permisos de usuario Runtime
     private boolean checkAndRequestPermissions() {
 
         int locationPermission = ContextCompat.checkSelfPermission(MyActivity, Manifest.permission.ACCESS_FINE_LOCATION);
@@ -153,6 +128,13 @@ public class MainActivity extends Activity {
 
 
             if (grantResults.length > 0) {
+
+//                if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED && grantResults[3] == PackageManager.PERMISSION_GRANTED ) {
+//                    loadLoginActivity();
+//
+//                }  else {
+//                    alertDialogBasico();
+//                }
                 boolean permissionsApp = true ;
                 for(int i=0; i < grantResults.length; i++) {
                     if(grantResults[i] != PackageManager.PERMISSION_GRANTED) {
@@ -162,10 +144,16 @@ public class MainActivity extends Activity {
                     }
                 }
 
-                if (permissionsApp==true)  loadLoginActivity();
-                else alertDialogBasico();
+                if (permissionsApp==true) {
+                    loadLoginActivity();
+
+                }  else {
+                    alertDialogBasico();
+                }
+
             }
         }
+
     }
 
     public void alertDialogBasico() {
@@ -184,6 +172,4 @@ public class MainActivity extends Activity {
         builder.show();
 
     }
-
-
 }
