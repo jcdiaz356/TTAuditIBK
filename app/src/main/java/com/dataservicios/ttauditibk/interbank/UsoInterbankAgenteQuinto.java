@@ -229,7 +229,8 @@ public class UsoInterbankAgenteQuinto  extends Activity {
 
                                     argRuta.putInt("idAuditoria",idAuditoria);
                                     Intent intent;
-                                    intent = new Intent("com.dataservicios.ttauditibk.USOIBKSEXTO");
+                                    //intent = new Intent("com.dataservicios.ttauditibk.USOIBKSEXTO");
+                                    intent = new Intent(MyActivity, UsoInterbankAgenteSexto.class);
                                     intent.putExtras(argRuta);
                                     startActivity(intent);
                                     finish();

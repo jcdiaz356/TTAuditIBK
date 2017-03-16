@@ -502,12 +502,9 @@
         <!-- Api Ke y producción -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyCPGLM8v0s0gmxgav-8P8jht06L9pOUUJ4" />
+            android:value="AIzaSyAdOI0ujQGIZf6F_E1vrX8xxmQbDp95FIM" />
 
-        <!-- key google mapas debuger -->
-        <!-- <meta-data -->
-        <!-- android:name="com.google.android.maps.v2.API_KEY" -->
-        <!-- android:value="AIzaSyBQJ8-4bDIXBdE-9Qg-f6tIpzt5V4xKbyg"/> -->
+
 
         <service
             android:name=".Services.UploadService"

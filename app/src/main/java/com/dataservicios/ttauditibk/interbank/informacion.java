@@ -142,7 +142,7 @@ public class informacion extends Activity {
                 RadioButton rb=(RadioButton)findViewById(checkedId);
                 if (rbSi.getId()==checkedId){
                     ViewGroup.LayoutParams paramsSi = lySi.getLayoutParams();
-                    paramsSi.height = 480;
+                    paramsSi.height = 900;
                     lySi.setLayoutParams(new LinearLayout.LayoutParams(paramsSi));
                     ViewGroup.LayoutParams paramsNo = lyNo.getLayoutParams();
                     paramsNo.height = 2;
@@ -163,11 +163,11 @@ public class informacion extends Activity {
                   //  lyNo.setVisibility(View.VISIBLE);
 
                     ViewGroup.LayoutParams paramsNo = lyNo.getLayoutParams();
-                    paramsNo.height = 480;
+                    paramsNo.height = 580;
                     lyNo.setLayoutParams(new LinearLayout.LayoutParams(paramsNo));
 
                     ViewGroup.LayoutParams params = lySi.getLayoutParams();
-                    params.height = 2;
+                    params.height = 20;
                     lySi.setLayoutParams(new LinearLayout.LayoutParams(params));
 
                     cbA.setChecked(false);
