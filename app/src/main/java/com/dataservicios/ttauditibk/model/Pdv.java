@@ -10,6 +10,7 @@ public class Pdv {
     private String thumbnailUrl, Pdv, Direccion , Distrito ;
     private int Status, id;
     private String type;
+
     //private ArrayList<String> genre;
 
     public Pdv() {
@@ -82,4 +83,6 @@ public class Pdv {
     public void setType(String type) {
         this.type = type;
     }
+
+
 }

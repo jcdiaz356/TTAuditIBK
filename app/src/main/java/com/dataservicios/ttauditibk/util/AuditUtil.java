@@ -318,10 +318,10 @@ public class AuditUtil {
                             //pdv.setThumbnailUrl(obj.getString("image"));
                             pdv.setDireccion(obj.getString("address"));
                             pdv.setDistrito(obj.getString("district"));
-                            pdv.setType(obj.getString("type"));
+                            //pdv.setType(obj.getString("type"));
 //                            pdv.setRegion(obj.getString("region"));
 //                            pdv.setTypeBodega(obj.getString("tipo_bodega"));
-//                            pdv.setComment(obj.getString("comment"));
+                            pdv.setType(obj.getString("comment"));
 //                            pdv.setCodClient(obj.getString("codclient"));
                             pdv.setStatus(Integer.valueOf(obj.getString("status")));
                             listaPdv.add(i,pdv);

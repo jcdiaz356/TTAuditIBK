@@ -65,6 +65,20 @@
         android:paddingRight="5dp"
         android:textSize="@dimen/genre" />
 
+    <TextView
+        android:id="@+id/tvTipo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvStoreId"
+        android:layout_marginTop="5dp"
+        android:text=""
+        android:layout_toRightOf="@+id/thumbnail"
+        android:background="@color/list_divider"
+        android:textColor="@color/color_dt_white"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:textSize="@dimen/genre" />
+
     <!-- Release Year -->
 
     <ImageView

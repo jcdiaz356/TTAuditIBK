@@ -62,11 +62,14 @@ public class PdvsAdapter extends BaseAdapter {
         TextView direccion = (TextView) convertView.findViewById(R.id.tvDireccion);
         TextView distrito = (TextView) convertView.findViewById(R.id.tvDistrito);
         TextView storeId = (TextView) convertView.findViewById(R.id.tvStoreId);
+        TextView tvTipo = (TextView) convertView.findViewById(R.id.tvTipo);
         ImageView imgStatus = (ImageView) convertView.findViewById(R.id.imgStatus);
         // getting ruta data for the row
         Pdv m = pdvItems.get(position);
         idPdv.setText(String.valueOf(m.getId()));
         storeId.setText(String.valueOf(m.getId()));
+        tvTipo.setText(String.valueOf(m.getType()));
+
 
         // thumbnail image
        // thumbNail.setImageUrl(m.getThumbnailUrl(), imageLoader);
