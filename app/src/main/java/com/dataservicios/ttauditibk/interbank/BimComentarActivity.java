@@ -48,6 +48,7 @@ public class BimComentarActivity extends Activity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bim_comentar);
+
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setTitle("Bim");
 
@@ -94,7 +95,7 @@ public class BimComentarActivity extends Activity {
                         pollDetail.setMedia(0);
                         pollDetail.setComment(1);
                         pollDetail.setResult(0);
-                        pollDetail.setLimite(0);
+                        pollDetail.setLimite("");
                         pollDetail.setComentario(comentario);
                         pollDetail.setAuditor(user_id);
                         pollDetail.setProduct_id(0);

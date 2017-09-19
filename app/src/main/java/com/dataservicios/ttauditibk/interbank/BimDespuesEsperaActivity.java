@@ -150,7 +150,7 @@ public class BimDespuesEsperaActivity extends Activity {
                         pollDetail.setMedia(0);
                         pollDetail.setComment(0);
                         pollDetail.setResult(0);
-                        pollDetail.setLimite(0);
+                        pollDetail.setLimite("");
                         pollDetail.setComentario("");
                         pollDetail.setAuditor(user_id);
                         pollDetail.setProduct_id(0);

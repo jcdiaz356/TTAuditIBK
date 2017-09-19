@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -23,6 +24,8 @@ import com.dataservicios.ttauditibk.R;
 import com.dataservicios.ttauditibk.SQLite.DatabaseHelper;
 import com.dataservicios.ttauditibk.app.AppController;
 import com.dataservicios.ttauditibk.model.Encuesta;
+import com.dataservicios.ttauditibk.model.PollDetail;
+import com.dataservicios.ttauditibk.util.AuditUtil;
 import com.dataservicios.ttauditibk.util.GlobalConstant;
 import com.dataservicios.ttauditibk.util.SessionManager;
 
@@ -40,7 +43,7 @@ import java.util.HashMap;
 public class EvaluacionTrato extends Activity {
     private static final String LOG_TAG = EvaluacionTrato.class.getSimpleName();
     private ProgressDialog pDialog;
-    private int idCompany, idPDV, idRuta, idAuditoria,idUser ;
+    private int idCompany, idPDV, idRuta, idAuditoria,idUser ,poll_id,user_id;
     private JSONObject params;
     private SessionManager session;
     private String email_user, name_user;
@@ -57,8 +60,10 @@ public class EvaluacionTrato extends Activity {
     String totalOption="";
     int totalValores ;
     String limite="";
+
     // Database Helper
     private DatabaseHelper db;
+    private PollDetail pollDetail;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +98,7 @@ public class EvaluacionTrato extends Activity {
         email_user = user.get(SessionManager.KEY_EMAIL);
         // id
         idUser = Integer.valueOf(user.get(SessionManager.KEY_ID_USER)) ;
+        user_id = Integer.valueOf(user.get(SessionManager.KEY_ID_USER)) ;
         params = new JSONObject();
         //Recogiendo paramentro del anterior Activity
         //Bundle bundle = savedInstanceState.getArguments();
@@ -101,6 +107,9 @@ public class EvaluacionTrato extends Activity {
         idPDV= bundle.getInt("idPDV");
         idRuta= bundle.getInt("idRuta");
         idAuditoria= bundle.getInt("idAuditoria");
+
+        poll_id = GlobalConstant.poll_id[23];
+
         try {
             params.put("idPDV", idPDV);
             //params.put("idRuta", idRuta);
@@ -116,6 +125,8 @@ public class EvaluacionTrato extends Activity {
         cargarPreguntasEncuesta(params);
 
 
+
+
         //
 
         guardar.setOnClickListener(new View.OnClickListener() {
@@ -124,38 +135,47 @@ public class EvaluacionTrato extends Activity {
 
                 //long id = rgTipo.getCheckedRadioButtonId();
 
+                totalOption ="";
+
                 if (cbA.isChecked()){
                     vA=1;
                     oA= pregunta.getTag().toString() + "a";
+                    totalOption = oA + "|"  + totalOption ;
                 }
                 if (cbB.isChecked()){
                     vB=1;
                     oB= pregunta.getTag().toString() + "b";
+                    totalOption = oB + "|"  + totalOption ;
                 }
                 if (cbC.isChecked()){
                     vC=1;
                     oC= pregunta.getTag().toString() + "c";
+                    totalOption = oC + "|"  + totalOption ;
                 }
                 if (cbD.isChecked()){
                     vD=1;
                     oD= pregunta.getTag().toString() + "d";
+                    totalOption = oD + "|"  + totalOption ;
                 }
                 if (cbE.isChecked()){
                     vE=1;
                     oE= pregunta.getTag().toString() + "e";
+                    totalOption = oE + "|"  + totalOption ;
                 }
                 if (cbF.isChecked()){
                     vF=1;
                     oF= pregunta.getTag().toString() + "f";
+                    totalOption = oF + "|"  + totalOption ;
                 }
                 if (cbG.isChecked()){
                     vG=1;
                     oG= pregunta.getTag().toString() + "g";
+                    totalOption = oG + "|"  + totalOption ;
                 }
 
                 totalValores = vA + vB + vC + vD + vE + vF + vG;
 
-                totalOption = oA + "|" + oB + "|" + oC + "|" + oD + "|" + oE + "|" + oF + "|" + oG ;
+                //totalOption = oA + "|" + oB + "|" + oC + "|" + oD + "|" + oE + "|" + oF + "|" + oG  + "|" ;
 
 
 //                if(totalValores<=4){
@@ -193,30 +213,53 @@ public class EvaluacionTrato extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int which)
                     {
-                        JSONObject paramsData;
-                        paramsData = new JSONObject();
-                        try {
-                            paramsData.put("poll_id", pregunta.getTag());
-                            paramsData.put("user_id", String.valueOf(idUser));
-                            paramsData.put("store_id", idPDV);
-                            paramsData.put("idAuditoria", idAuditoria);
-                            paramsData.put("idCompany", idCompany);
-                            paramsData.put("idRuta", idRuta);
-                            paramsData.put("sino", "0");
-                            paramsData.put("options", "1");
-                            paramsData.put("limits", "1");
-                            paramsData.put("media", "0");
-                            paramsData.put("coment", "0");
-                            paramsData.put("result", result);
-                            paramsData.put("status", "0");
-                            paramsData.put("opcion", totalOption);
-                            paramsData.put("limite", limite);
-                            paramsData.put("comentario", "");
-                            //params.put("id_pdv",idPDV);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        insertaEncuesta(paramsData);
+
+                        pollDetail = new PollDetail();
+                        pollDetail.setPoll_id(poll_id);
+                        pollDetail.setStore_id(idPDV);
+                        pollDetail.setSino(0);
+                        pollDetail.setOptions(1);
+                        pollDetail.setLimits(1);
+                        pollDetail.setMedia(0);
+                        pollDetail.setComment(0);
+                        pollDetail.setResult(result);
+                        pollDetail.setLimite(limite);
+                        pollDetail.setComentario("");
+                        pollDetail.setAuditor(user_id);
+                        pollDetail.setProduct_id(0);
+                        pollDetail.setCategory_product_id(0);
+                        pollDetail.setPublicity_id(0);
+                        pollDetail.setCompany_id(GlobalConstant.company_id);
+                        pollDetail.setCommentOptions(0);
+                        pollDetail.setSelectdOptions(totalOption);
+                        pollDetail.setSelectedOtionsComment("");
+                        pollDetail.setPriority("0");
+
+//                        JSONObject paramsData;
+//                        paramsData = new JSONObject();
+//                        try {
+//                            paramsData.put("poll_id", pregunta.getTag());
+//                            paramsData.put("user_id", String.valueOf(idUser));
+//                            paramsData.put("store_id", idPDV);
+//                            paramsData.put("idAuditoria", idAuditoria);
+//                            paramsData.put("idCompany", idCompany);
+//                            paramsData.put("idRuta", idRuta);
+//                            paramsData.put("sino", "0");
+//                            paramsData.put("options", "1");
+//                            paramsData.put("limits", "1");
+//                            paramsData.put("media", "0");
+//                            paramsData.put("coment", "0");
+//                            paramsData.put("result", result);
+//                            paramsData.put("status", "0");
+//                            paramsData.put("opcion", totalOption);
+//                            paramsData.put("limite", limite);
+//                            paramsData.put("comentario", "");
+//                            //params.put("id_pdv",idPDV);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                        insertaEncuesta(paramsData);
+                        new loadPoll().execute();
                         dialog.dismiss();
 
                     }
@@ -357,6 +400,56 @@ public class EvaluacionTrato extends Activity {
         );
 
         AppController.getInstance().addToRequestQueue(jsObjRequest);
+    }
+
+
+    class loadPoll extends AsyncTask<Void , Integer , Boolean> {
+        /**
+         * Antes de comenzar en el hilo determinado, Mostrar progresión
+         * */
+        boolean failure = false;
+        @Override
+        protected void onPreExecute() {
+            //tvCargando.setText("Cargando Product...");
+            pDialog.show();
+            super.onPreExecute();
+        }
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // TODO Auto-generated method stub
+
+            if(!AuditUtil.insertPollDetail(pollDetail)) return false;
+
+            return true;
+        }
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        protected void onPostExecute(Boolean result) {
+            // dismiss the dialog once product deleted
+
+            if (result){
+                // loadLoginActivity();
+                    Bundle argRuta = new Bundle();
+                    argRuta.clear();
+                    argRuta.putInt("company_id",idCompany);
+                    argRuta.putInt("idPDV",idPDV);
+                    argRuta.putInt("idRuta", idRuta );
+                    argRuta.putInt("idAuditoria",idAuditoria);
+
+                    Intent intent;
+
+                    intent = new Intent(MyActivity, EvaluacionTratoDos.class);
+                    intent.putExtras(argRuta);
+                    startActivity(intent);
+                    finish();
+
+
+            } else {
+                Toast.makeText(MyActivity , R.string.saveError, Toast.LENGTH_LONG).show();
+            }
+            hidepDialog();
+        }
     }
 
     private void showpDialog() {

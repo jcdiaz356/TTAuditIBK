@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -26,7 +27,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.dataservicios.ttauditibk.R;
 import com.dataservicios.ttauditibk.SQLite.DatabaseHelper;
 import com.dataservicios.ttauditibk.app.AppController;
+import com.dataservicios.ttauditibk.model.Audit;
 import com.dataservicios.ttauditibk.model.Encuesta;
+import com.dataservicios.ttauditibk.model.PollDetail;
+import com.dataservicios.ttauditibk.util.AuditUtil;
 import com.dataservicios.ttauditibk.util.GlobalConstant;
 import com.dataservicios.ttauditibk.util.SessionManager;
 
@@ -44,7 +48,7 @@ import java.util.HashMap;
 public class informacion extends Activity {
     private static final String LOG_TAG = informacion.class.getSimpleName();
     private ProgressDialog pDialog;
-    private int idCompany, idPDV, idRuta, idAuditoria,idUser ;
+    private Integer idCompany, idPDV, idRuta, idAuditoria,user_id , poll_id;
     private JSONObject params;
     private SessionManager session;
     private String email_user, name_user;
@@ -52,21 +56,17 @@ public class informacion extends Activity {
     Activity MyActivity = (Activity) this;
     TextView pregunta ;
     Button guardar;
-    //RadioGroup rgTipo;
-    CheckBox cbA,cbB,cbC,cbD,cbE,cbF,cbG,cbH,cbI,cbJ,cbK;
+
+    private CheckBox[] checkBoxArray;
     EditText comentario;
     LinearLayout lySi , lyNo;
-
     RadioGroup rgTipo;
     RadioButton rbSi,rbNo;
 
+    String opt="";
 
-    int vA=0,vB=0,vC=0,vD=0,vE=0,vF=0,vG=0,vH=0,vI=0,vJ=0,vK=0;
-    String oA="",oB="",oC="",oD="",oE="",oF="",oG="" ,oH="" ,oI="" , oJ="", oK="";
-    String totalOption="";
-    int totalValores ;
     String limite="";
-    // Database Helper
+    private PollDetail pollDetail;
     private DatabaseHelper db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,17 +82,18 @@ public class informacion extends Activity {
         pregunta = (TextView) findViewById(R.id.tvPregunta);
         guardar = (Button) findViewById(R.id.btGuardar);
         //rgTipo=(RadioGroup) findViewById(R.id.rgTipo);
-        cbA=(CheckBox) findViewById(R.id.cbA);
-        cbB=(CheckBox) findViewById(R.id.cbB);
-        cbC=(CheckBox) findViewById(R.id.cbC);
-        cbD=(CheckBox) findViewById(R.id.cbD);
-        cbE=(CheckBox) findViewById(R.id.cbE);
-        cbF=(CheckBox) findViewById(R.id.cbF);
-        cbG=(CheckBox) findViewById(R.id.cbG);
-        cbH=(CheckBox) findViewById(R.id.cbH);
-        cbI=(CheckBox) findViewById(R.id.cbI);
-        cbJ=(CheckBox) findViewById(R.id.cbJ);
-        cbK=(CheckBox) findViewById(R.id.cbK);
+
+        checkBoxArray = new CheckBox[] {
+                (CheckBox) findViewById(R.id.cbA),
+                (CheckBox) findViewById(R.id.cbB),
+                (CheckBox) findViewById(R.id.cbC),
+                (CheckBox) findViewById(R.id.cbD),
+                (CheckBox) findViewById(R.id.cbE),
+                (CheckBox) findViewById(R.id.cbF),
+                (CheckBox) findViewById(R.id.cbG),
+                (CheckBox) findViewById(R.id.cbH),
+                (CheckBox) findViewById(R.id.cbI),
+        };
 
         lySi=(LinearLayout) findViewById(R.id.lyChkSi);
         lyNo=(LinearLayout) findViewById(R.id.lyChkNo);
@@ -113,7 +114,7 @@ public class informacion extends Activity {
         // email
         email_user = user.get(SessionManager.KEY_EMAIL);
         // id
-        idUser = Integer.valueOf(user.get(SessionManager.KEY_ID_USER)) ;
+        user_id = Integer.valueOf(user.get(SessionManager.KEY_ID_USER)) ;
         params = new JSONObject();
         //Recogiendo paramentro del anterior Activity
         //Bundle bundle = savedInstanceState.getArguments();
@@ -127,7 +128,7 @@ public class informacion extends Activity {
             //params.put("idRuta", idRuta);
             params.put("idAuditoria", idAuditoria);
             params.put("idCompany", idCompany);
-            params.put("idUser", idUser);
+            params.put("idUser", user_id);
 
             //params.put("id_pdv",idPDV);
         } catch (JSONException e) {
@@ -135,52 +136,43 @@ public class informacion extends Activity {
         }
         db.deleteAllEncuesta();
         cargarPreguntasEncuesta(params);
+
+        lyNo.setVisibility(View.GONE);
         rgTipo.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 // checkedId is the RadioButton selected
                 RadioButton rb=(RadioButton)findViewById(checkedId);
                 if (rbSi.getId()==checkedId){
-                    ViewGroup.LayoutParams paramsSi = lySi.getLayoutParams();
-                    paramsSi.height = 900;
-                    lySi.setLayoutParams(new LinearLayout.LayoutParams(paramsSi));
-                    ViewGroup.LayoutParams paramsNo = lyNo.getLayoutParams();
-                    paramsNo.height = 2;
-                    lyNo.setLayoutParams(new LinearLayout.LayoutParams(paramsNo));
-                    cbA.setChecked(false);
-                    cbB.setChecked(false);
-                    cbC.setChecked(false);
-                    cbD.setChecked(false);
-                    cbE.setChecked(false);
-                    cbF.setChecked(false);
-                    cbG.setChecked(false);
-                    cbH.setChecked(false);
-                    cbI.setChecked(false);
-                    cbJ.setChecked(false);
-                    cbK.setChecked(false);
+//                    ViewGroup.LayoutParams paramsSi = lySi.getLayoutParams();
+//                    paramsSi.height = 900;
+//                    lySi.setLayoutParams(new LinearLayout.LayoutParams(paramsSi));
+//                    ViewGroup.LayoutParams paramsNo = lyNo.getLayoutParams();
+//                    paramsNo.height = 2;
+//                    lyNo.setLayoutParams(new LinearLayout.LayoutParams(paramsNo));
+                    lySi.setVisibility(View.VISIBLE);
+                    lyNo.setVisibility(View.GONE);
+                    for (int x = 0; x < checkBoxArray.length; x++) {
+                        checkBoxArray[x].setChecked(false);
+                    }
                 } else if (rbNo.getId()==checkedId) {
                     //lySi.setVisibility(View.INVISIBLE);
                   //  lyNo.setVisibility(View.VISIBLE);
 
-                    ViewGroup.LayoutParams paramsNo = lyNo.getLayoutParams();
-                    paramsNo.height = 580;
-                    lyNo.setLayoutParams(new LinearLayout.LayoutParams(paramsNo));
+//                    ViewGroup.LayoutParams paramsNo = lyNo.getLayoutParams();
+//                    paramsNo.height = 580;
+//                    lyNo.setLayoutParams(new LinearLayout.LayoutParams(paramsNo));
+//
+//                    ViewGroup.LayoutParams params = lySi.getLayoutParams();
+//                    params.height = 20;
+//                    lySi.setLayoutParams(new LinearLayout.LayoutParams(params));
 
-                    ViewGroup.LayoutParams params = lySi.getLayoutParams();
-                    params.height = 20;
-                    lySi.setLayoutParams(new LinearLayout.LayoutParams(params));
+                    lySi.setVisibility(View.GONE);
+                    lyNo.setVisibility(View.VISIBLE);
 
-                    cbA.setChecked(false);
-                    cbB.setChecked(false);
-                    cbC.setChecked(false);
-                    cbD.setChecked(false);
-                    cbE.setChecked(false);
-                    cbF.setChecked(false);
-                    cbG.setChecked(false);
-                    cbH.setChecked(false);
-                    cbI.setChecked(false);
-                    cbJ.setChecked(false);
-                    cbK.setChecked(false);
+                    for (int x = 0; x < checkBoxArray.length; x++) {
+                        checkBoxArray[x].setChecked(false);
+                    }
 
                 }
                 //textViewChoice.setText("You Selected "+rb.getText());
@@ -192,7 +184,7 @@ public class informacion extends Activity {
         guardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                opt = "" ;
                 long id = rgTipo.getCheckedRadioButtonId();
                 if (id == -1){
                     //no item selected
@@ -211,67 +203,21 @@ public class informacion extends Activity {
                     }
                 }
 
-
-                if (cbA.isChecked()){
-                    vA=1;
-                    oA= pregunta.getTag().toString() + "a";
-                }
-                if (cbB.isChecked()){
-                    vB=1;
-                    oB= pregunta.getTag().toString() + "b";
-                }
-                if (cbC.isChecked()){
-                    vC=1;
-                    oC= pregunta.getTag().toString() + "c";
-                }
-                if (cbD.isChecked()){
-                    vD=1;
-                    oD= pregunta.getTag().toString() + "d";
-                }
-                if (cbE.isChecked()){
-                    vE=1;
-                    oE= pregunta.getTag().toString() + "e";
-                }
-                if (cbF.isChecked()){
-                    vF=1;
-                    oF= pregunta.getTag().toString() + "f";
-                }
-                if (cbG.isChecked()){
-                    vG=1;
-                    oG= pregunta.getTag().toString() + "g";
-                }
-                if (cbH.isChecked()){
-                    vH=1;
-                    oH= pregunta.getTag().toString() + "h";
-                }
-                if (cbI.isChecked()){
-                    vI=1;
-                    oI= pregunta.getTag().toString() + "i";
-                }
-                if (cbJ.isChecked()){
-                    vJ=1;
-                    oJ= pregunta.getTag().toString() + "j";
-                }
-                if (cbK.isChecked()){
-                    vK=1;
-                    oK= pregunta.getTag().toString() + "k";
+                int contador = 0;
+                for (int x = 0; x < checkBoxArray.length; x++) {
+                    if(checkBoxArray[x].isChecked()) contador ++;
                 }
 
-                totalValores = vA + vB + vC + vD + vE + vF + vG + vH + vI + vJ + vK;
+                if (contador == 0){
+                    Toast.makeText(MyActivity,"Seleccionar una opción " , Toast.LENGTH_LONG).show();
+                    return;
+                } else{
+                    for (int x = 0; x < checkBoxArray.length; x++) {
+                        if(checkBoxArray[x].isChecked())  {
+                            opt =  poll_id.toString() + checkBoxArray[x].getTag() + "|" + opt;
+                        }
 
-                totalOption = oA + "|" + oB + "|" + oC + "|" + oD + "|" + oE + "|" + oF + "|" + oG + "|" + oH  + "|" + oI + "|" + oJ + "|" + oK ;
-
-
-                if(totalValores<=4){
-                    limite="Debajo del estándar";
-                }
-
-                if(totalValores==5 ){
-                    limite="Estándar";
-                }
-
-                if(totalValores>5 ){
-                    limite="Superior";
+                    }
                 }
 
 
@@ -284,32 +230,31 @@ public class informacion extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int which)
                     {
-                        JSONObject paramsData;
-                        paramsData = new JSONObject();
-                        try {
-                            paramsData.put("poll_id", pregunta.getTag());
-                            paramsData.put("user_id", String.valueOf(idUser));
-                            paramsData.put("store_id", idPDV);
-                            paramsData.put("idAuditoria", idAuditoria);
-                            paramsData.put("idCompany", idCompany);
-                            paramsData.put("idRuta", idRuta);
-                            paramsData.put("sino", "1");
-                            paramsData.put("options", "1");
-                            paramsData.put("limits", "0");
-                            paramsData.put("media", "0");
-                            paramsData.put("coment", "0");
-                            paramsData.put("coment_options", "1");
-                            paramsData.put("result", result);
-                            paramsData.put("status", "0");
-                            paramsData.put("opcion", totalOption);
-                            paramsData.put("limite", limite);
-                            paramsData.put("comentario", "");
-                            paramsData.put("comentario_options", comentario.getText());
-                            //params.put("id_pdv",idPDV);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        insertaEncuesta(paramsData);
+
+
+                        pollDetail = new PollDetail();
+                        pollDetail.setPoll_id(poll_id);
+                        pollDetail.setStore_id(idPDV);
+                        pollDetail.setSino(1);
+                        pollDetail.setOptions(1);
+                        pollDetail.setLimits(0);
+                        pollDetail.setMedia(0);
+                        pollDetail.setComment(0);
+                        pollDetail.setResult(result);
+                        pollDetail.setLimite("");
+                        pollDetail.setComentario("");
+                        pollDetail.setAuditor(user_id);
+                        pollDetail.setProduct_id(0);
+                        pollDetail.setCategory_product_id(0);
+                        pollDetail.setPublicity_id(0);
+                        pollDetail.setCompany_id(GlobalConstant.company_id);
+                        pollDetail.setCommentOptions(0);
+                        pollDetail.setSelectdOptions(opt);
+                        pollDetail.setSelectedOtionsComment("");
+                        pollDetail.setPriority("0");
+
+                        new loadPoll().execute();
+
                         dialog.dismiss();
 
                     }
@@ -336,6 +281,7 @@ public class informacion extends Activity {
         if(db.getEncuestaCount()>0) {
             //Encuesta encuesta = db.getEncuesta(552);
             Encuesta encuesta = db.getEncuesta(GlobalConstant.poll_id[26]);
+            poll_id = GlobalConstant.poll_id[26];
             //if (idPregunta.equals("2")  ){
             pregunta.setText(encuesta.getQuestion());
             pregunta.setTag(encuesta.getId());
@@ -421,14 +367,15 @@ public class informacion extends Activity {
                                 // onBackPressed();
                                 Bundle argRuta = new Bundle();
                                 argRuta.clear();
-                                argRuta.putInt("company_id",idCompany);
-                                argRuta.putInt("idPDV",idPDV);
-                                argRuta.putInt("idRuta", idRuta );
-                                argRuta.putInt("idAuditoria",idAuditoria);
+
+                                argRuta.putInt("store_id",idPDV);
+                                argRuta.putInt("road_id", idRuta );
+                                argRuta.putInt("audit_id",idAuditoria);
 
                                 Intent intent;
                                 //intent = new Intent(MyActivity,informacionDos.class);
-                                intent = new Intent(MyActivity,informacionCuatro.class);
+                                //intent = new Intent(MyActivity,InformacionComentario.class);
+                                intent = new Intent(MyActivity,InformacionComisionesActivity.class);
                                 intent.putExtras(argRuta);
                                 startActivity(intent);
                                 finish();
@@ -451,6 +398,50 @@ public class informacion extends Activity {
         );
 
         AppController.getInstance().addToRequestQueue(jsObjRequest);
+    }
+
+    class loadPoll extends AsyncTask<Void , Integer , Boolean> {
+        /**
+         * Antes de comenzar en el hilo determinado, Mostrar progresión
+         * */
+        boolean failure = false;
+        @Override
+        protected void onPreExecute() {
+            //tvCargando.setText("Cargando Product...");
+            pDialog.show();
+            super.onPreExecute();
+        }
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // TODO Auto-generated method stub
+            if(!AuditUtil.insertPollDetail(pollDetail)) return false;
+            return true;
+        }
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        protected void onPostExecute(Boolean result) {
+            // dismiss the dialog once product deleted
+
+            if (result){
+                // loadLoginActivity();
+                Bundle argRuta = new Bundle();
+                argRuta.clear();
+                argRuta.putInt("store_id",idPDV);
+                argRuta.putInt("road_id", idRuta );
+                argRuta.putInt("audit_id",idAuditoria);
+                Intent intent;
+                intent = new Intent(MyActivity,InformacionComisionesActivity.class);
+                intent.putExtras(argRuta);
+                startActivity(intent);
+                finish();
+
+
+            } else {
+                Toast.makeText(MyActivity , R.string.saveError, Toast.LENGTH_LONG).show();
+            }
+            hidepDialog();
+        }
     }
 
     private void showpDialog() {

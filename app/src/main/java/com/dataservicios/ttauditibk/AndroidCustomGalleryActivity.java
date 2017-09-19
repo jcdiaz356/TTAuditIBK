@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -32,6 +33,8 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import static java.security.AccessController.getContext;
 
 
 /**
@@ -100,14 +103,23 @@ public class AndroidCustomGalleryActivity extends Activity {
                 // to save picture remove comment
                 File file = new File(albumF,imageFileName+JPEG_FILE_SUFFIX);
 
-
-
                 Uri photoPath = Uri.fromFile(file);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoPath);
-
+                //intent.putExtra(MediaStore.EXTRA_OUTPUT, photoPath);
                 mCurrentPhotoPath = getAlbumDir().getAbsolutePath();
-
                 // start camera activity
+               // startActivityForResult(intent, TAKE_PICTURE);
+
+
+                //Intent intent = new Intent();
+                //intent.setAction(Intent.ACTION_VIEW);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    Uri contentUri = FileProvider.getUriForFile(MyActivity, "com.dataservicios.ttauditibk.fileProvider", file);
+                    //intent.setDataAndType(contentUri, type);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+                } else {
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoPath);
+                }
                 startActivityForResult(intent, TAKE_PICTURE);
 
             }

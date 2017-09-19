@@ -7,74 +7,71 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.dataservicios.ttauditibk.AndroidCustomGalleryActivity;
 import com.dataservicios.ttauditibk.R;
 import com.dataservicios.ttauditibk.SQLite.DatabaseHelper;
+import com.dataservicios.ttauditibk.app.AppController;
 import com.dataservicios.ttauditibk.model.Audit;
+import com.dataservicios.ttauditibk.model.Encuesta;
 import com.dataservicios.ttauditibk.model.PollDetail;
 import com.dataservicios.ttauditibk.util.AuditUtil;
+import com.dataservicios.ttauditibk.util.GPSTracker;
 import com.dataservicios.ttauditibk.util.GlobalConstant;
 import com.dataservicios.ttauditibk.util.SessionManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
-public class BimNoRealizoTrasaccionActivity extends Activity {
 
+/**
+ * Created by usuario on 08/04/2015.
+ */
+public class InformacionComentario extends Activity {
     private Activity myActivity = this ;
-    private static final String LOG_TAG = BimNoRealizoTrasaccionActivity.class.getSimpleName();
+    private static final String LOG_TAG = InformacionComentario.class.getSimpleName();
     private SessionManager session;
-
     private Button bt_guardar;
-    private EditText et_Comentario,etComent1,etComent2;
-    private TextView tv_Pregunta;
-    private LinearLayout lyPermitio, lyOpenClose, lyAuditoria;
-    private String tipo,cadenaruc, fechaRuta, comentario1="", type, region,typeBodega;
-    private Integer user_id, company_id,store_id,audit_id, road_id, poll_id;
+    private Integer user_id, company_id,store_id,road_id,audit_id,  poll_id;
+    private EditText etComent ;
+    private String comentario;
     private DatabaseHelper db;
     private ProgressDialog pDialog;
-    private RadioGroup rgOpt1;
-    private String opt1="";
-    private RadioButton[] radioButton1Array;
-    private PollDetail pollDetail, pollDetail2;
+    private PollDetail pollDetail;
     private Audit mAudit;
-
+    GPSTracker gpsTracker;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bim_no_realizo_trasaccion);
+        setContentView(R.layout.inter_informacion_cuatro);
+
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setTitle("Bim");
 
-        lyAuditoria = (LinearLayout) findViewById(R.id.lyAuditoria);
-        lyOpenClose = (LinearLayout) findViewById(R.id.lyOpenClose);
-        rgOpt1=(RadioGroup) findViewById(R.id.rgOpt1);
-
-        radioButton1Array = new RadioButton[] {
-                (RadioButton) findViewById(R.id.rbA1),
-                (RadioButton) findViewById(R.id.rbB1),
-                (RadioButton) findViewById(R.id.rbC1),
-                (RadioButton) findViewById(R.id.rbD1),
-                (RadioButton) findViewById(R.id.rbE1),
-                (RadioButton) findViewById(R.id.rbF1),
-                (RadioButton) findViewById(R.id.rbG1),
-
-        };
-
+        gpsTracker = new GPSTracker(myActivity);
 
         bt_guardar = (Button) findViewById(R.id.btGuardar);
-        //et_Comentario = (EditText) findViewById(R.id.etComentario);
-        etComent1 = (EditText) findViewById(R.id.etComent1);
+        etComent = (EditText) findViewById(R.id.etComment);
 
         Bundle bundle = getIntent().getExtras();
         company_id = GlobalConstant.company_id;
@@ -82,9 +79,7 @@ public class BimNoRealizoTrasaccionActivity extends Activity {
         audit_id = bundle.getInt("audit_id");
         road_id = bundle.getInt("road_id");
 
-        poll_id = GlobalConstant.poll_id[34] ;// 5 "Se encuentra Abierto el punto?"
-
-        //poll_id = 72 , solo para exhibiciones de bayer, directo de la base de datos
+        poll_id = GlobalConstant.poll_id[27];
 
         pDialog = new ProgressDialog(myActivity);
         pDialog.setMessage(getString(R.string.text_loading));
@@ -95,86 +90,45 @@ public class BimNoRealizoTrasaccionActivity extends Activity {
         // id
         user_id = Integer.valueOf(user.get(SessionManager.KEY_ID_USER)) ;
 
-
-
-
-        rgOpt1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(radioButton1Array[6].isChecked())
-                {
-                    etComent1.setEnabled(true);
-                    etComent1.setVisibility(View.VISIBLE);
-                    etComent1.setText("");
-                }
-                else
-                {
-                    etComent1.setEnabled(false);
-                    etComent1.setVisibility(View.INVISIBLE);
-                    etComent1.setText("");
-                }
-            }
-        });
-
-
         bt_guardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                opt1="";
-
-
-                long id1 = rgOpt1.getCheckedRadioButtonId();
-                if (id1 == -1){
-                    Toast.makeText(myActivity, R.string.message_select_options , Toast.LENGTH_LONG).show();
-                    return;
-                }
-                else{
-                    for (int x = 0; x < radioButton1Array.length; x++) {
-                        if(id1 ==  radioButton1Array[x].getId())  opt1 = poll_id.toString() + radioButton1Array[x].getTag();
-                    }
-
-                }
-
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(myActivity);
-                builder.setTitle("Guardar Encuesta");
-                builder.setMessage("Está seguro de guardar todas las encuestas: ");
-                builder.setPositiveButton("Si", new DialogInterface.OnClickListener()
+                builder.setTitle(R.string.save);
+                builder.setMessage(R.string.saveInformation);
+                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
                 {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        comentario1 = String.valueOf(etComent1.getText()) ;
-
+                        comentario = etComent.getText().toString();
                         pollDetail = new PollDetail();
                         pollDetail.setPoll_id(poll_id);
                         pollDetail.setStore_id(store_id);
                         pollDetail.setSino(0);
-                        pollDetail.setOptions(1);
+                        pollDetail.setOptions(0);
                         pollDetail.setLimits(0);
                         pollDetail.setMedia(0);
-                        pollDetail.setComment(0);
+                        pollDetail.setComment(1);
                         pollDetail.setResult(0);
                         pollDetail.setLimite("");
-                        pollDetail.setComentario("");
+                        pollDetail.setComentario(comentario);
                         pollDetail.setAuditor(user_id);
                         pollDetail.setProduct_id(0);
                         pollDetail.setCategory_product_id(0);
                         pollDetail.setPublicity_id(0);
                         pollDetail.setCompany_id(GlobalConstant.company_id);
-                        pollDetail.setCommentOptions(1);
-                        pollDetail.setSelectdOptions(opt1);
-                        pollDetail.setSelectedOtionsComment(comentario1);
+                        pollDetail.setCommentOptions(0);
+                        pollDetail.setSelectdOptions("");
+                        pollDetail.setSelectedOtionsComment("");
                         pollDetail.setPriority("0");
-
 
                         new loadPoll().execute();
                         dialog.dismiss();
                     }
                 });
 
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -189,10 +143,7 @@ public class BimNoRealizoTrasaccionActivity extends Activity {
 
     }
 
-
-
-
-    class loadPoll extends AsyncTask<Void, Integer , Boolean> {
+    class loadPoll extends AsyncTask<Void , Integer , Boolean> {
         /**
          * Antes de comenzar en el hilo determinado, Mostrar progresión
          * */
@@ -207,11 +158,23 @@ public class BimNoRealizoTrasaccionActivity extends Activity {
         protected Boolean doInBackground(Void... params) {
             // TODO Auto-generated method stub
 
-
-
             if(!AuditUtil.insertPollDetail(pollDetail)) return false;
 
+            String time_close = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss").format(new Date());
+            mAudit = new Audit();
+            mAudit.setCompany_id(GlobalConstant.company_id);
+            mAudit.setStore_id(store_id);
+            mAudit.setId(audit_id);
+            mAudit.setRoute_id(road_id);
+            mAudit.setUser_id(user_id);
+            mAudit.setLatitude_close(String.valueOf(gpsTracker.getLatitude()));
+            mAudit.setLongitude_close(String.valueOf(gpsTracker.getLongitude()));
+            mAudit.setLatitude_open(String.valueOf(GlobalConstant.latitude_open));
+            mAudit.setLongitude_open(String.valueOf(GlobalConstant.longitude_open));
+            mAudit.setTime_open(GlobalConstant.inicio);
+            mAudit.setTime_close(time_close);
 
+            if(!AuditUtil.closeAuditRoadStore(mAudit)) return false;
 
             return true;
         }
@@ -222,22 +185,9 @@ public class BimNoRealizoTrasaccionActivity extends Activity {
             // dismiss the dialog once product deleted
 
             if (result){
-                // loadLoginActivity();
-
-                Bundle argRuta = new Bundle();
-                argRuta.clear();
-                argRuta.putInt("store_id", store_id);
-                argRuta.putInt("road_id", road_id);
-                argRuta.putInt("audit_id", audit_id);
-
-                Intent intent;
-
-                intent = new Intent(myActivity, BimSolucionTransaccionActivity.class);
-                intent.putExtras(argRuta);
-                startActivity(intent);
                 finish();
             } else {
-                Toast.makeText(myActivity , "No se pudo guardar la información intentelo nuevamente", Toast.LENGTH_LONG).show();
+                Toast.makeText(myActivity , R.string.saveError, Toast.LENGTH_LONG).show();
             }
             hidepDialog();
         }
@@ -248,12 +198,6 @@ public class BimNoRealizoTrasaccionActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // app icon in action bar clicked; goto parent activity.
-//                this.finish();
-//                Intent a = new Intent(this,PanelAdmin.class);
-//                //a.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                startActivity(a);
-//                overridePendingTransition(R.anim.anim_slide_in_right,R.anim.anim_slide_out_right);
                 onBackPressed();
                 return true;
             default:
@@ -261,9 +205,6 @@ public class BimNoRealizoTrasaccionActivity extends Activity {
         }
         //return super.onOptionsItemSelected(item);
     }
-
-
-
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -277,7 +218,7 @@ public class BimNoRealizoTrasaccionActivity extends Activity {
     }
     @Override
     public void onBackPressed() {
-        Toast.makeText(myActivity, "No se puede volver atras, los datos ya fueron guardado, para modificar póngase en contácto con el administrador", Toast.LENGTH_LONG).show();
+        Toast.makeText(myActivity,R.string.mesaage_on_back, Toast.LENGTH_LONG).show();
 //        super.onBackPressed();
 //        this.finish();
 //

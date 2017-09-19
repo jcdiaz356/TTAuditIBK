@@ -124,7 +124,7 @@ public class BimLetreroActivity extends Activity {
                         pollDetail.setMedia(1);
                         pollDetail.setComment(0);
                         pollDetail.setResult(is_sino);
-                        pollDetail.setLimite(0);
+                        pollDetail.setLimite("");
                         pollDetail.setComentario("");
                         pollDetail.setAuditor(user_id);
                         pollDetail.setProduct_id(0);

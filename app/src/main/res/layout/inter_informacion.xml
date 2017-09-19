@@ -91,6 +91,7 @@
             android:layout_height="wrap_content"
             android:text="Incremento de clientes"
             android:padding="5dp"
+            android:tag="a"
             android:id="@+id/cbA" />
 
         <CheckBox
@@ -98,6 +99,7 @@
             android:layout_height="wrap_content"
             android:text="Más ventas"
             android:padding="5dp"
+            android:tag="b"
             android:id="@+id/cbB" />
 
         <CheckBox
@@ -105,12 +107,14 @@
             android:layout_height="wrap_content"
             android:text="Comisiones"
             android:padding="5dp"
+            android:tag="c"
             android:id="@+id/cbC" />
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Mejora de imagen"
             android:padding="5dp"
+            android:tag="d"
             android:id="@+id/cbD" />
 
         <CheckBox
@@ -118,19 +122,21 @@
             android:layout_height="wrap_content"
             android:text="Porque me diferencia de la competencia"
             android:padding="5dp"
+            android:tag="e"
             android:id="@+id/cbE" />
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Porque los clientes lo solicitan"
             android:padding="5dp"
+            android:tag="f"
             android:id="@+id/cbF" />
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Otros"
-                android:padding="5dp"
-                android:id="@+id/cbG" />
+            <!--<CheckBox-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="Otros"-->
+                <!--android:padding="5dp"-->
+                <!--android:id="@+id/cbG" />-->
 
 
 
@@ -138,42 +144,45 @@
 
         <LinearLayout
             android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:padding="5dp"
+
             android:id="@+id/lyChkNo">
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Seguridad"
                 android:padding="5dp"
-                android:id="@+id/cbH" />
-
+                android:tag="g"
+                android:id="@+id/cbG" />
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Perdida de tiempo"
                 android:padding="5dp"
-                android:id="@+id/cbI" />
+                android:tag="h"
+                android:id="@+id/cbH" />
 
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Las comisiones son bajas"
                 android:padding="5dp"
-                android:id="@+id/cbJ" />
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Otros"
-                android:padding="5dp"
-                android:id="@+id/cbK" />
+                android:tag="i"
+                android:id="@+id/cbI" />
+            <!--<CheckBox-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="Otros"-->
+                <!--android:padding="5dp"-->
+                <!--android:id="@+id/cbK" />-->
 
         </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp">
 

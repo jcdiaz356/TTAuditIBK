@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -22,7 +24,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.dataservicios.ttauditibk.R;
 import com.dataservicios.ttauditibk.SQLite.DatabaseHelper;
 import com.dataservicios.ttauditibk.app.AppController;
+import com.dataservicios.ttauditibk.model.Audit;
 import com.dataservicios.ttauditibk.model.Encuesta;
+import com.dataservicios.ttauditibk.model.PollDetail;
+import com.dataservicios.ttauditibk.util.AuditUtil;
 import com.dataservicios.ttauditibk.util.GlobalConstant;
 import com.dataservicios.ttauditibk.util.SessionManager;
 
@@ -30,6 +35,8 @@ import com.dataservicios.ttauditibk.util.SessionManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 
@@ -41,7 +48,7 @@ import java.util.HashMap;
 public class EvaluacionTratoTres extends Activity {
     private static final String LOG_TAG = EvaluacionTratoTres.class.getSimpleName();
     private ProgressDialog pDialog;
-    private int idCompany, idPDV, idRuta, idAuditoria,idUser ;
+    private int idCompany, idPDV, idRuta, idAuditoria,idUser ,user_id,poll_id;
     private JSONObject params;
     private SessionManager session;
     private String email_user, name_user;
@@ -60,6 +67,8 @@ public class EvaluacionTratoTres extends Activity {
     String limite="";
     // Database Helper
     private DatabaseHelper db;
+    private PollDetail pollDetail;
+    private Audit mAudit;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,10 +86,6 @@ public class EvaluacionTratoTres extends Activity {
         cbA=(CheckBox) findViewById(R.id.cbA);
         cbB=(CheckBox) findViewById(R.id.cbB);
         cbC=(CheckBox) findViewById(R.id.cbC);
-       // cbD=(CheckBox) findViewById(R.id.cbD);
-//        cbE=(CheckBox) findViewById(R.id.cbE);
-//        cbF=(CheckBox) findViewById(R.id.cbF);
-//        cbG=(CheckBox) findViewById(R.id.cbG);
 
         pDialog = new ProgressDialog(this);
         pDialog.setMessage("Cargando...");
@@ -94,6 +99,7 @@ public class EvaluacionTratoTres extends Activity {
         email_user = user.get(SessionManager.KEY_EMAIL);
         // id
         idUser = Integer.valueOf(user.get(SessionManager.KEY_ID_USER)) ;
+        user_id = Integer.valueOf(user.get(SessionManager.KEY_ID_USER)) ;
         params = new JSONObject();
         //Recogiendo paramentro del anterior Activity
         //Bundle bundle = savedInstanceState.getArguments();
@@ -102,6 +108,9 @@ public class EvaluacionTratoTres extends Activity {
         idPDV= bundle.getInt("idPDV");
         idRuta= bundle.getInt("idRuta");
         idAuditoria= bundle.getInt("idAuditoria");
+
+        poll_id = GlobalConstant.poll_id[25];
+
         try {
             params.put("idPDV", idPDV);
             //params.put("idRuta", idRuta);
@@ -125,42 +134,28 @@ public class EvaluacionTratoTres extends Activity {
 
                 //long id = rgTipo.getCheckedRadioButtonId();
 
+                totalOption = "";
                 if (cbA.isChecked()){
                     vA=1;
                     oA= pregunta.getTag() + "a";
+                    totalOption = oA + "|"  + totalOption ;
                 }
                 if (cbB.isChecked()){
                     vB=1;
                     oB= pregunta.getTag() + "b";
+                    totalOption = oB + "|"  + totalOption ;
                 }
                 if (cbC.isChecked()){
                     vC=1;
                     oC= pregunta.getTag() + "c";
+                    totalOption = oC + "|"  + totalOption ;
                 }
-//                if (cbD.isChecked()){
-//                    vD=1;
-//                    oD= pregunta.getText() + "d";
-//                }
-//                if (cbE.isChecked()){
-//                    vE=1;
-//                    oE= pregunta.getText() + "e";
-//                }
-//                if (cbF.isChecked()){
-//                    vF=1;
-//                    oF= pregunta.getText() + "f";
-//                }
-//                if (cbG.isChecked()){
-//                    vG=1;
-//                    oG= pregunta.getText() + "g";
-//                }
+
 
                 totalValores = vA + vB + vC + vD + vE + vF + vG;
 
-                totalOption = oA + "|" + oB + "|" + oC; //+ "|" + oD ;// + oE + "|" + oF + "|" + oG ;
-
-
                 if(totalValores<=1){
-                    limite=" Debajo del estándar";
+                    limite="Debajo del estándar";
                 }
 
                 if(totalValores==2 ){
@@ -181,30 +176,30 @@ public class EvaluacionTratoTres extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int which)
                     {
-                        JSONObject paramsData;
-                        paramsData = new JSONObject();
-                        try {
-                            paramsData.put("poll_id", pregunta.getTag());
-                            paramsData.put("user_id", String.valueOf(idUser));
-                            paramsData.put("store_id", idPDV);
-                            paramsData.put("idAuditoria", idAuditoria);
-                            paramsData.put("idCompany", idCompany);
-                            paramsData.put("idRuta", idRuta);
-                            paramsData.put("sino", "0");
-                            paramsData.put("options", "1");
-                            paramsData.put("limits", "1");
-                            paramsData.put("media", "0");
-                            paramsData.put("coment", "0");
-                            paramsData.put("result", result);
-                            paramsData.put("status", "1");
-                            paramsData.put("opcion", totalOption);
-                            paramsData.put("limite", limite);
-                            paramsData.put("comentario", "");
-                            //params.put("id_pdv",idPDV);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        insertaEncuesta(paramsData);
+
+
+                        pollDetail = new PollDetail();
+                        pollDetail.setPoll_id(poll_id);
+                        pollDetail.setStore_id(idPDV);
+                        pollDetail.setSino(0);
+                        pollDetail.setOptions(1);
+                        pollDetail.setLimits(1);
+                        pollDetail.setMedia(0);
+                        pollDetail.setComment(0);
+                        pollDetail.setResult(result);
+                        pollDetail.setLimite(limite);
+                        pollDetail.setComentario("");
+                        pollDetail.setAuditor(user_id);
+                        pollDetail.setProduct_id(0);
+                        pollDetail.setCategory_product_id(0);
+                        pollDetail.setPublicity_id(0);
+                        pollDetail.setCompany_id(GlobalConstant.company_id);
+                        pollDetail.setCommentOptions(0);
+                        pollDetail.setSelectdOptions(totalOption);
+                        pollDetail.setSelectedOtionsComment("");
+                        pollDetail.setPriority("0");
+
+                        new loadPoll().execute();
                         dialog.dismiss();
 
                     }
@@ -239,57 +234,65 @@ public class EvaluacionTratoTres extends Activity {
     }
 
 
-    private void insertaEncuesta(JSONObject paramsData) {
-        showpDialog();
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST , GlobalConstant.dominio + "/JsonInsertAuditPolls" ,paramsData,
-                new Response.Listener<JSONObject>()
-                {
-                    @Override
-                    public void onResponse(JSONObject response)
-                    {
-                        Log.d(LOG_TAG, response.toString());
-                        //adapter.notifyDataSetChanged();
-                        try {
-                            //String agente = response.getString("agentes");
-                            int success =  response.getInt("success");
-                            //idCompany =response.getInt("company");
-                            if (success == 1) {
+    class loadPoll extends AsyncTask<Void , Integer , Boolean> {
+        /**
+         * Antes de comenzar en el hilo determinado, Mostrar progresión
+         * */
+        boolean failure = false;
+        @Override
+        protected void onPreExecute() {
+            //tvCargando.setText("Cargando Product...");
+            pDialog.show();
+            super.onPreExecute();
+        }
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // TODO Auto-generated method stub
 
-                                Toast toast;
-                                toast = Toast.makeText(MyActivity, "Se guardo correctamente los datos", Toast.LENGTH_LONG);
-                                toast.show();
-                                // onBackPressed();
-//                                Bundle argRuta = new Bundle();
-//                                argRuta.clear();
-//                                argRuta.putInt("company_id",idCompany);
-//                                argRuta.putInt("idPDV",idPDV);
-//                                argRuta.putInt("idRuta", idRuta );
-//                                argRuta.putInt("idAuditoria",idAuditoria);
+
+
+            if(!AuditUtil.insertPollDetail(pollDetail)) return false;
+
+            mAudit = new Audit();
+            mAudit.setCompany_id(GlobalConstant.company_id);
+            mAudit.setStore_id(idPDV);
+            mAudit.setId(idAuditoria);
+            mAudit.setRoute_id(idRuta);
+            mAudit.setUser_id(user_id);
+
+
+            if(!AuditUtil.closeAuditRoadStore(mAudit)) return false;
+
+            return true;
+        }
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        protected void onPostExecute(Boolean result) {
+            // dismiss the dialog once product deleted
+
+            if (result){
+                // loadLoginActivity();
+//                Bundle argRuta = new Bundle();
+//                argRuta.clear();
+//                argRuta.putInt("company_id",idCompany);
+//                argRuta.putInt("idPDV",idPDV);
+//                argRuta.putInt("idRuta", idRuta );
+//                argRuta.putInt("idAuditoria",idAuditoria);
 //
-//                                Intent intent;
-//                                intent = new Intent(MyActivity,EvaluacionTratoTres.class);
-//                                intent.putExtras(argRuta);
-//                                startActivity(intent);
-                                finish();
+//                Intent intent;
+//
+//                intent = new Intent(MyActivity, EvaluacionTratoTres.class);
+//                intent.putExtras(argRuta);
+//                startActivity(intent);
+                finish();
 
 
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        hidepDialog();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        //VolleyLog.d(TAG, "Error: " + error.getMessage());
-                        hidepDialog();
-                    }
-                }
-        );
-
-        AppController.getInstance().addToRequestQueue(jsObjRequest);
+            } else {
+                Toast.makeText(MyActivity , R.string.saveError, Toast.LENGTH_LONG).show();
+            }
+            hidepDialog();
+        }
     }
 
     private void showpDialog() {

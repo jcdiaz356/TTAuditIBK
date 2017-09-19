@@ -30,10 +30,8 @@ import java.util.List;
  * Created by usuario on 06/01/2015.
  */
 public class PuntoVentaFragment extends Fragment {
-
     // Log tag
     private static final String TAG = MainActivity.class.getSimpleName();
-
     // Movies json url
     private static final String url = "http://api.androidhive.info/json/movies.json";
     private ProgressDialog pDialog;
@@ -88,9 +86,7 @@ public class PuntoVentaFragment extends Fragment {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-
                         }
-
                         // notifying list adapter about data changes
                         // so that it renders the list view with updated data
                         adapter.notifyDataSetChanged();
@@ -100,14 +96,10 @@ public class PuntoVentaFragment extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d(TAG, "Error: " + error.getMessage());
                 hidePDialog();
-
             }
         });
-
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(movieReq);
-
-
         return rootView;
     }
 

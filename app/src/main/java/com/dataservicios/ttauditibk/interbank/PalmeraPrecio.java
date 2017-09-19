@@ -110,7 +110,7 @@ public class PalmeraPrecio extends Activity {
                         mPollDetail.setMedia(0);
                         mPollDetail.setComment(1);
                         mPollDetail.setResult(0);
-                        mPollDetail.setLimite(0);
+                        mPollDetail.setLimite("");
                         mPollDetail.setComentario(comentario.toString());
                         mPollDetail.setAuditor(user_id);
                         mPollDetail.setProduct_id(0);

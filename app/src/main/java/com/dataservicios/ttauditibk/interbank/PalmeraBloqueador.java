@@ -253,7 +253,7 @@ public class PalmeraBloqueador extends Activity {
                         mPollDetail.setMedia(0);
                         mPollDetail.setComment(0);
                         mPollDetail.setResult(is_sino);
-                        mPollDetail.setLimite(0);
+                        mPollDetail.setLimite("");
                         mPollDetail.setComentario("");
                         mPollDetail.setAuditor(user_id);
                         mPollDetail.setProduct_id(0);

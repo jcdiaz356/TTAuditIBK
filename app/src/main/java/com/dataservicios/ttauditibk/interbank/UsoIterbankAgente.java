@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -49,7 +50,7 @@ public class UsoIterbankAgente extends Activity {
     private static final String LOG_TAG = UsoIterbankAgente.class.getSimpleName();
 
     private ProgressDialog pDialog;
-    private int idCompany, idPDV, idRuta, idAuditoria,idUser, idPoll ;
+    private Integer idCompany, store_id, idRuta, idAuditoria,user_id, poll_id ;
     private JSONObject params;
     private SessionManager session;
     private String email_user, name_user;
@@ -59,11 +60,13 @@ public class UsoIterbankAgente extends Activity {
     Button guardar, btPhoto;
     RadioGroup rgTipo;
     RadioButton rbSi,rbNo;
-    EditText comentario;
+    private CheckBox[] checkBoxArray;
+
+    private EditText etCommentOption;
+    private LinearLayout lyOptionComment;
 
     LinearLayout ly_ChkSi ;
-    CheckBox cb_A,cb_B,cb_C,cb_D,cb_E ;
-    private String opciones="";
+    private String  opt1="", commentOptions;
 
     private DatabaseHelper db;
     private PollDetail pollDetail;
@@ -87,11 +90,18 @@ public class UsoIterbankAgente extends Activity {
         rbSi=(RadioButton) findViewById(R.id.rbSi);
         rbNo=(RadioButton) findViewById(R.id.rbNo);
         ly_ChkSi = (LinearLayout) findViewById(R.id.lyChkSi);
-        cb_A = (CheckBox) findViewById(R.id.cbA);
-        cb_B = (CheckBox) findViewById(R.id.cbB);
-        cb_C = (CheckBox) findViewById(R.id.cbC);
-        cb_D = (CheckBox) findViewById(R.id.cbD);
-        cb_E = (CheckBox) findViewById(R.id.cbE);
+
+        checkBoxArray = new CheckBox[] {
+                (CheckBox) findViewById(R.id.cbA),
+                (CheckBox) findViewById(R.id.cbB),
+                (CheckBox) findViewById(R.id.cbC),
+                (CheckBox) findViewById(R.id.cbD),
+                (CheckBox) findViewById(R.id.cbE),
+                (CheckBox) findViewById(R.id.cbF),
+                (CheckBox) findViewById(R.id.cbG),
+        };
+
+        lyOptionComment = (LinearLayout) findViewById(R.id.lyOptionComment);
 
         enabledControl(false);
 
@@ -106,23 +116,22 @@ public class UsoIterbankAgente extends Activity {
         // email
         email_user = user.get(SessionManager.KEY_EMAIL);
         // id
-        idUser = Integer.valueOf(user.get(SessionManager.KEY_ID_USER)) ;
+        user_id = Integer.valueOf(user.get(SessionManager.KEY_ID_USER)) ;
         params = new JSONObject();
         //Recogiendo paramentro del anterior Activity
         //Bundle bundle = savedInstanceState.getArguments();
         Bundle bundle = getIntent().getExtras();
         idCompany=bundle.getInt("company_id");
-        idPDV= bundle.getInt("idPDV");
+        store_id= bundle.getInt("idPDV");
         idRuta= bundle.getInt("idRuta");
         idAuditoria= bundle.getInt("idAuditoria");
         try {
-            params.put("idPDV", idPDV);
+            params.put("idPDV", store_id);
             //params.put("idRuta", idRuta);
             params.put("idAuditoria", idAuditoria);
             params.put("idCompany", idCompany);
-            params.put("idUser", idUser);
+            params.put("idUser", user_id);
 
-            //params.put("id_pdv",idPDV);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -145,13 +154,79 @@ public class UsoIterbankAgente extends Activity {
                 if(checkedId == rbNo.getId()) {
                     enabledControl(false);
                 }
+            }
+        });
 
+        etCommentOption     = new EditText(MyActivity);
+        checkBoxArray[6].setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (buttonView.isChecked()) {
+                    lyOptionComment.removeAllViews();
+                    etCommentOption.setHint("Comentario");
+                    etCommentOption.setText("");
+                    lyOptionComment.addView(etCommentOption);
+                }
+                else
+                {
+                    etCommentOption.setText("");
+                    lyOptionComment.removeAllViews();
+                }
             }
         });
 
         guardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                opt1 = "" ;
+                commentOptions="";
+
+                long id = rgTipo.getCheckedRadioButtonId();
+                if (id == -1){
+                    //no item selected
+                    //valor ="";
+                    Toast toast;
+                    toast = Toast.makeText(MyActivity,"Debe seleccionar una opción" , Toast.LENGTH_LONG);
+                    toast.show();
+                    return;
+                }
+                else{
+                    if (id == rbSi.getId()){
+                        //Do something with the button
+                        result = 1;
+
+                        int contador = 0;
+                        for (int x = 0; x < checkBoxArray.length; x++) {
+                            if(checkBoxArray[x].isChecked()) contador ++;
+                        }
+
+                        if (contador == 0){
+                            Toast.makeText(MyActivity,"Seleccionar una opción " , Toast.LENGTH_LONG).show();
+                            return;
+                        } else{
+                            for (int x = 0; x < checkBoxArray.length; x++) {
+                                if(checkBoxArray[x].isChecked())  {
+                                    opt1 =  poll_id.toString() + checkBoxArray[x].getTag() + "|" + opt1;
+                                    if(x==6){
+                                        //commentOptions = etCommentOption.getText().toString(); else comentario="" ;
+                                        commentOptions = etCommentOption.getText().toString() + "|" + commentOptions;
+                                    } else {
+                                        commentOptions =  "|" + commentOptions;
+                                    }
+
+                                }
+
+                            }
+                        }
+
+                        // enabledControl(true);
+                    } else if(id == rbNo.getId()){
+                        result = 0;
+                        // enabledControl(false);
+                    }
+                }
+
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity);
                 builder.setTitle("Guardar Encuesta");
@@ -163,119 +238,32 @@ public class UsoIterbankAgente extends Activity {
                     public void onClick(DialogInterface dialog, int which)
                     {
 
-                        String opcionA, opcionB , opcionC, opcionD, opcionE ;
-                        opcionA ="";
-                        opcionB ="";
-                        opcionC = "";
-                        opcionD = "";
-                        opcionE = "";
-
-                        boolean selected = false ;
-
-                        long id = rgTipo.getCheckedRadioButtonId();
-                        if (id == -1){
-                            //no item selected
-                            //valor ="";
-                            Toast toast;
-                            toast = Toast.makeText(MyActivity,"Debe seleccionar una opción" , Toast.LENGTH_LONG);
-                            toast.show();
-                            return;
-                        }
-                        else{
-                            if (id == rbSi.getId()){
-                                //Do something with the button
-
-                                if (cb_A.isChecked()){
-                                    selected = true;
-                                    opcionA =  idPoll + "a|";
-                                }
-                                if (cb_B.isChecked()){
-                                    selected = true;
-                                    opcionB =  idPoll + "b|";
-                                }
-                                if (cb_C.isChecked()){
-                                    selected = true;
-                                    opcionC =  idPoll + "c|";
-                                }
-                                if (cb_D.isChecked()){
-                                    selected = true;
-                                    opcionD =  idPoll + "d|";
-                                }
-                                if (cb_E.isChecked()){
-
-                                    selected = true;
-                                    opcionE =  idPoll + "e|";
-                                }
-                                opciones = opcionA + opcionB + opcionC + opcionD + opcionE ;
-                                result = 1;
-                                if (!selected){
-                                    Toast toast;
-                                    toast = Toast.makeText(MyActivity,"Debe marcar una opción" , Toast.LENGTH_LONG);
-                                    toast.show();
-                                    return;
-                                }
-
-                                // enabledControl(true);
-                            } else if(id == rbNo.getId()){
-                                result = 0;
-                                // enabledControl(false);
-                            }
-                        }
-
-                        JSONObject paramsData;
-                        paramsData = new JSONObject();
-                        try {
-                            paramsData.put("poll_id", pregunta.getTag());
-                            paramsData.put("user_id", String.valueOf(idUser));
-                            paramsData.put("store_id", idPDV);
-                            paramsData.put("idAuditoria", idAuditoria);
-                            paramsData.put("idCompany", idCompany);
-                            paramsData.put("idRuta", idRuta);
-                            paramsData.put("sino", "1");
-                            paramsData.put("options", "1");
-                            paramsData.put("limits", "0");
-                            //paramsData.put("tipo", "1");
-                            paramsData.put("media", "1");
-                            paramsData.put("coment", "0");
-                            paramsData.put("result", result);
-                            paramsData.put("opcion",opciones );
-                            paramsData.put("status", "0");
-                            paramsData.put("comentario", "");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        insertaEncuesta(paramsData);
 
 
+                        pollDetail = new PollDetail();
+                        pollDetail.setPoll_id(poll_id);
+                        pollDetail.setStore_id(store_id);
+                        pollDetail.setSino(1);
+                        pollDetail.setOptions(1);
+                        pollDetail.setLimits(0);
+                        pollDetail.setMedia(1);
+                        pollDetail.setComment(0);
+                        pollDetail.setResult(result);
+                        pollDetail.setLimite("0");
+                        pollDetail.setComentario("");
+                        pollDetail.setAuditor(user_id);
+                        pollDetail.setProduct_id(0);
+                        pollDetail.setPublicity_id(0);
+                        pollDetail.setCompany_id(GlobalConstant.company_id);
+                        pollDetail.setCategory_product_id(0);
+                        pollDetail.setCommentOptions(1);
+                        pollDetail.setSelectdOptions(opt1);
+                        pollDetail.setSelectedOtionsComment(commentOptions);
+                        pollDetail.setPriority("0");
 
-
-
-//                        //comentario = String.valueOf(etComent.getText()) ;
-//                        pollDetail = new PollDetail();
-//                        pollDetail.setPoll_id(idPoll);
-//                        pollDetail.setStore_id(idPDV);
-//                        pollDetail.setSino(1);
-//                        pollDetail.setOptions(1);
-//                        pollDetail.setLimits(0);
-//                        pollDetail.setMedia(1);
-//                        pollDetail.setComment(0);
-//                        pollDetail.setResult(result);
-//                        pollDetail.setLimite(0);
-//                        pollDetail.setComentario("");
-//                        pollDetail.setAuditor(idUser);
-//                        pollDetail.setProduct_id(0);
-//                        pollDetail.setCategory_product_id(0);
-//                        pollDetail.setPublicity_id(0);
-//                        pollDetail.setCompany_id(GlobalConstant.company_id);
-//                        pollDetail.setCommentOptions(0);
-//                        pollDetail.setSelectdOptions(opciones);
-//                        pollDetail.setSelectedOtionsComment("");
-//                        pollDetail.setPriority("0");
-//
-//                        new loadPoll().execute();
-
-
+                        new loadPoll().execute();
                         dialog.dismiss();
+
 
                     }
                 });
@@ -326,13 +314,6 @@ public class UsoIterbankAgente extends Activity {
                                     encuesta.setQuestion(obj.getString("question"));
                                     db.createEncuesta(encuesta);
 
-                                    // int status = obj.getInt("state");
-//                                    if (idPregunta.equals("2")  ){
-//                                        idPoll= Integer.valueOf(idPregunta);
-//                                        pregunta.setText(question);
-//                                        pregunta.setTag(idPregunta);
-//                                    }
-
 
                                 }
                             }
@@ -364,64 +345,12 @@ public class UsoIterbankAgente extends Activity {
             //if (idPregunta.equals("2")  ){
             pregunta.setText(encuesta.getQuestion());
             pregunta.setTag(encuesta.getId());
-            idPoll=encuesta.getId();
+            poll_id=encuesta.getId();
             //}
         }
     }
 
-    private void insertaEncuesta(JSONObject paramsData) {
-        showpDialog();
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST ,  GlobalConstant.dominio + "/JsonInsertAuditPolls" ,paramsData,
-                new Response.Listener<JSONObject>()
-                {
-                    @Override
-                    public void onResponse(JSONObject response)
-                    {
-                        Log.d(LOG_TAG, response.toString());
-                        //adapter.notifyDataSetChanged();
-                        try {
-                            //String agente = response.getString("agentes");
-                            int success =  response.getInt("success");
-                            //idCompany =response.getInt("company");
-                            if (success == 1) {
 
-                                Toast toast;
-                                toast = Toast.makeText(MyActivity, "Se guardo correctamente los datos", Toast.LENGTH_LONG);
-                                toast.show();
-                               // onBackPressed();
-
-                                Bundle argRuta = new Bundle();
-                                argRuta.clear();
-                                argRuta.putInt("company_id",idCompany);
-                                argRuta.putInt("idPDV",idPDV);
-                                argRuta.putInt("idRuta", idRuta );
-
-                                argRuta.putInt("idAuditoria",idAuditoria);
-                                Intent intent;
-                                //intent = new Intent("com.dataservicios.ttauditibk.USOIBKSEGUNDO");
-                                intent = new Intent(MyActivity,UsoInterbankAgenteSegundo.class);
-                                intent.putExtras(argRuta);
-                                startActivity(intent);
-                                finish();
-
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        hidepDialog();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        //VolleyLog.d(TAG, "Error: " + error.getMessage());
-                        hidepDialog();
-                    }
-                }
-        );
-
-        AppController.getInstance().addToRequestQueue(jsObjRequest);
-    }
 
 
     // Camera
@@ -429,8 +358,8 @@ public class UsoIterbankAgente extends Activity {
 
         Intent i = new Intent( MyActivity, AndroidCustomGalleryActivity.class);
         Bundle bolsa = new Bundle();
-        bolsa.putString("idPDV", String.valueOf(idPDV));
-        bolsa.putString("idPoll", String.valueOf(idPoll));
+        bolsa.putString("idPDV", String.valueOf(store_id));
+        bolsa.putString("idPoll", String.valueOf(poll_id));
         bolsa.putString("tipo","1");
 
 
@@ -473,7 +402,7 @@ public class UsoIterbankAgente extends Activity {
                 Bundle argRuta = new Bundle();
                 argRuta.clear();
                 argRuta.putInt("company_id",idCompany);
-                argRuta.putInt("idPDV",idPDV);
+                argRuta.putInt("idPDV",store_id);
                 argRuta.putInt("idRuta", idRuta );
 
                 argRuta.putInt("idAuditoria",idAuditoria);
@@ -534,19 +463,23 @@ public class UsoIterbankAgente extends Activity {
     private void enabledControl(boolean state){
         if (state) {
             ly_ChkSi.setVisibility(View.VISIBLE);
-            cb_A.setChecked(false);
-            cb_B.setChecked(false);
-            cb_C.setChecked(false);
-            cb_D.setChecked(false);
-            cb_E.setChecked(false);
+            checkBoxArray[0].setChecked(false);
+            checkBoxArray[1].setChecked(false);
+            checkBoxArray[2].setChecked(false);
+            checkBoxArray[3].setChecked(false);
+            checkBoxArray[4].setChecked(false);
+            checkBoxArray[5].setChecked(false);
+            checkBoxArray[6].setChecked(false);
 
         } else {
             ly_ChkSi.setVisibility(View.INVISIBLE);
-            cb_A.setChecked(false);
-            cb_B.setChecked(false);
-            cb_C.setChecked(false);
-            cb_D.setChecked(false);
-            cb_E.setChecked(false);
+            checkBoxArray[0].setChecked(false);
+            checkBoxArray[1].setChecked(false);
+            checkBoxArray[2].setChecked(false);
+            checkBoxArray[3].setChecked(false);
+            checkBoxArray[4].setChecked(false);
+            checkBoxArray[5].setChecked(false);
+            checkBoxArray[6].setChecked(false);
         }
 
     }

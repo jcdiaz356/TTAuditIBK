@@ -94,12 +94,14 @@
             android:layout_height="wrap_content"
             android:text="Letrero de metal o madera"
             android:padding="5dp"
+            android:tag="a"
             android:id="@+id/cbA" />
 
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Rompe tráfico"
+            android:tag="b"
             android:padding="5dp"
             android:id="@+id/cbB" />
 
@@ -108,23 +110,53 @@
             android:layout_height="wrap_content"
             android:text=" Letrero luminoso"
             android:padding="5dp"
+            android:tag="c"
             android:id="@+id/cbC" />
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Letrero luminoso Bandera"
             android:padding="5dp"
+            android:tag="d"
             android:id="@+id/cbD" />
 
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" Letrero compartido"
+            android:text="Letrero compartido"
             android:padding="5dp"
+            android:tag="e"
             android:id="@+id/cbE" />
 
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Banner"
+            android:padding="5dp"
+            android:tag="f"
+            android:id="@+id/cbF" />
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Otros"
+            android:padding="5dp"
+            android:tag="g"
+            android:id="@+id/cbG" />
 
+    </LinearLayout>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+
+            <LinearLayout
+                android:id="@+id/lyOptionComment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+            </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
