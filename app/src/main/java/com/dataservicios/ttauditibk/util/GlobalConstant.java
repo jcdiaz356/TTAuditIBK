@@ -18,51 +18,51 @@ public final class GlobalConstant {
     public static String inicio,fin;
     public static  double latitude_open, longitude_open;
     public static  int global_close_audit =0;
-    public static int company_id = 100;
+    public static int company_id = 120;
     public static int company_id_palmera = 47;
     public static String type_aplication = "android";
 
     public static int[] poll_id = new int[]{
-        1703, // 1635,   //  0 Al llegar al establecimiento el cliente incógnito deberá preguntar directamente por el agente de Interbank. Ejemplo: Buenos días/tardes, ¿hay agente de Interbank aquí?
-        1704, // 1636,   //  1 Indicar Rubro
-        1705, // 1637,   //  2 ¿Se encuentra abierto el agente?
-        1706, // 1638,   //  3 ¿El letrero de IBK Agente era visible desde fuera?
-        1707, // 1639,   //  4 ¿El Interbank Agente es visible estando dentro del establecimiento?
-        1708, // 1640,   //  5 ¿Existe algún otro Agente / corresponsal bancario?
-        1709, // 1641,   //  6 El CI deberá preguntar,  ¿Puedo pagar una tarjeta de crédito de Interbank acá?
-        1710, // 1642,   //  7 En el caso de que exista más de un agente en el comercio, preguntar, ¿acá puedo pagar mi teléfono?
-        1711, // 1643,   //  8 Si responde que si en la P8, preguntar ¿Y en cuál agente me conviene pagar mi teléfono?
-        1712, // 1644,   //  9 Si me envían dinero del exterior ¿Lo puedo cobrar acá?
-        1713, // 1645,   //  10 Al preguntar si se podía hacer la operación correspondiente, ¿el dependiente aceptó realizar la operación?
-        1714, // 1646,   //  11 ¿Su solicitud fue atendido de inmediato?
-        1715, // 1647,   //  12  Su solicitud no fue atendida de inmediato porque
-        1716, // 1648,   //  13 Mientras esperaba. ¿La persona que lo atendió se preocupó por su tiempo?
-        1717, // 1649,   //  14 Después de esperar
-        1718, // 1650,   //  15 ¿La transacción se llegó a realizar de manera exitosa?  (Se considera exitosa cuando se entrega el voucher)
-        1719, // 1651,   //  16 ¿Cuántos MINUTOS transcurrieron entre que solicitó la transacción y la persona terminó (le entregá el voucher)?
-        1720, // 1652,   //  17 ¿La persona que lo atendió tuvo que solicitar ayuda de alguna otra persona o hacer alguna consulta al respecto?
-        1721, // 1653,   //  18 ¿Le entregaron ESPONTÁNEAMENTE un comprobante luego de la transacción? (Si no le entregaron espontáneamente el voucher deben solicitarlo y adjuntarlo al formulario)
-        1722, // 1654,   //  19 (SÓLO SI NO SE REALIZÓ LA TRANSACCIÓN) ¿Por qué no se pudo realizar la transacción?
-        1723, // 1655,   //  20 (SÓLO SI NO SE REALIZÓ LA TRANSACCIÓN) ¿Le dieron alguna solución para poder realizar la transacción?
-        1724, // 1656,   //  21 Escoger tipo de Transacción
-        1725, // 1657,   //  22 ¿El agente hizo algún cobro fuera del voucher?
-        1726, // 1658,   //  23 En una escala del 0 al 3 donde 0 significa Debajo del estándar, 2 Estándar y 3 Superior, ¿cómo calificarías la amabilidad de la persona que te atendió?
-        1727, // 1659,   //  24 En una escala del 0 al 3 donde 0 significa Debajo del estándar, 2 Estándar y 3 Superior, ¿cómo calificarías el conocimiento de la persona que lo atendió?
-        1728, // 1660,   //  25 En una escala del 0 al 3 donde 0 significa Debajo del estándar, 2 Estándar y 3 Superior, ¿cómo calificarías la disposición de la persona que lo atendió?
-        1729, // 1661,   //  26 El CI deberá mostrar interés: Voy a abrir un negocio, ¿usted me recomendaría tener un agente Interbank?
-        1730, // 1662,   //  27 Otras apreciaciones a comentar
-        1731, // 1663,   //  28	¿El letrero de Agente BIM era visible desde fuera?
-        1732, // 1664,   //  29	Al preguntar si se podía hacer la operación, ¿el dependiente aceptó realizar la operación?
-        1733, // 1665,   //  30	¿Su solicitud fue atendido de inmediato?
-        1734, // 1666,   //  31	 Su solicitud no fue atendida de inmediato porque
-        1735, // 1667,   //  32	Después de esperar
-        1736, // 1668,   //  33	¿La transacción se llegó a realizar de manera exitosa?  (Ojo esta tipo de transacciones no generan voucher, la confirmación es a través de un SMS)
-        1737, // 1669,   //  34	(SÓLO SI NO SE REALIZÓ LA TRANSACCIÓN) ¿Por qué no se pudo realizar la transacción?
-        1738, // 1670,   //  35	(SÓLO SI NO SE REALIZÓ LA TRANSACCIÓN) ¿Le dieron alguna solución para poder realizar la transacción?
-        1739, // 1671,   //  36	(BIM) Otras apreciaciones a comentar
-        1769,	//           37 ¿Tus comisiones te las pagan puntualmente?
-        1770,	//           38 ¿Me puedes referir a tu ejecutivo IBK?
-        1772,	//           39 ¿Existen ofertas para adelanto de sueldo o prestamos a travez de sus agentes?
+       2057, // 1912, // 1703, // 1635,   //  0 Al llegar al establecimiento el cliente incógnito deberá preguntar directamente por el agente de Interbank. Ejemplo: Buenos días/tardes, ¿hay agente de Interbank aquí?
+       2058, // 1913, // 1704, // 1636,   //  1 Indicar Rubro
+       2059, // 1914, // 1705, // 1637,   //  2 ¿Se encuentra abierto el agente?
+       2060, // 1915, // 1706, // 1638,   //  3 ¿El letrero de IBK Agente era visible desde fuera?
+       2061, // 1916, // 1707, // 1639,   //  4 ¿El Interbank Agente es visible estando dentro del establecimiento?
+       2062, // 1917, // 1708, // 1640,   //  5 ¿Existe algún otro Agente / corresponsal bancario?
+       2063, // 1918, // 1709, // 1641,   //  6 El CI deberá preguntar,  ¿Puedo pagar una tarjeta de crédito de Interbank acá?
+       2064, // 1919, // 1710, // 1642,   //  7 En el caso de que exista más de un agente en el comercio, preguntar, ¿acá puedo pagar mi teléfono?
+       2065, // 1920, // 1711, // 1643,   //  8 Si responde que si en la P8, preguntar ¿Y en cuál agente me conviene pagar mi teléfono?
+       2066, // 1921, // 1712, // 1644,   //  9 Si me envían dinero del exterior ¿Lo puedo cobrar acá?
+       2067, // 1922, // 1713, // 1645,   //  10 Al preguntar si se podía hacer la operación correspondiente, ¿el dependiente aceptó realizar la operación?
+       2068, // 1923, // 1714, // 1646,   //  11 ¿Su solicitud fue atendido de inmediato?
+       2069, // 1924, // 1715, // 1647,   //  12  Su solicitud no fue atendida de inmediato porque
+       2070, // 1925, // 1716, // 1648,   //  13 Mientras esperaba. ¿La persona que lo atendió se preocupó por su tiempo?
+       2071, // 1926, // 1717, // 1649,   //  14 Después de esperar
+       2072, // 1927, // 1718, // 1650,   //  15 ¿La transacción se llegó a realizar de manera exitosa?  (Se considera exitosa cuando se entrega el voucher)
+       2073, // 1928, // 1719, // 1651,   //  16 ¿Cuántos MINUTOS transcurrieron entre que solicitó la transacción y la persona terminó (le entregá el voucher)?
+       2074, // 1929, // 1720, // 1652,   //  17 ¿La persona que lo atendió tuvo que solicitar ayuda de alguna otra persona o hacer alguna consulta al respecto?
+       2075, // 1930, // 1721, // 1653,   //  18 ¿Le entregaron ESPONTÁNEAMENTE un comprobante luego de la transacción? (Si no le entregaron espontáneamente el voucher deben solicitarlo y adjuntarlo al formulario)
+       2076, // 1931, // 1722, // 1654,   //  19 (SÓLO SI NO SE REALIZÓ LA TRANSACCIÓN) ¿Por qué no se pudo realizar la transacción?
+       2077, // 1932, // 1723, // 1655,   //  20 (SÓLO SI NO SE REALIZÓ LA TRANSACCIÓN) ¿Le dieron alguna solución para poder realizar la transacción?
+       2078, // 1933, // 1724, // 1656,   //  21 Escoger tipo de Transacción
+       2079, // 1934, // 1725, // 1657,   //  22 ¿El agente hizo algún cobro fuera del voucher?
+       2080, // 1935, // 1726, // 1658,   //  23 En una escala del 0 al 3 donde 0 significa Debajo del estándar, 2 Estándar y 3 Superior, ¿cómo calificarías la amabilidad de la persona que te atendió?
+       2081, // 1936, // 1727, // 1659,   //  24 En una escala del 0 al 3 donde 0 significa Debajo del estándar, 2 Estándar y 3 Superior, ¿cómo calificarías el conocimiento de la persona que lo atendió?
+       2082, // 1937, // 1728, // 1660,   //  25 En una escala del 0 al 3 donde 0 significa Debajo del estándar, 2 Estándar y 3 Superior, ¿cómo calificarías la disposición de la persona que lo atendió?
+       2083, // 1938, // 1729, // 1661,   //  26 El CI deberá mostrar interés: Voy a abrir un negocio, ¿usted me recomendaría tener un agente Interbank?
+       2084, // 1939, // 1730, // 1662,   //  27 Otras apreciaciones a comentar
+       2085, // 1940, // 1731, // 1663,   //  28	¿El letrero de Agente BIM era visible desde fuera?
+       2086, // 1941, // 1732, // 1664,   //  29	Al preguntar si se podía hacer la operación, ¿el dependiente aceptó realizar la operación?
+       2087, // 1942, // 1733, // 1665,   //  30	¿Su solicitud fue atendido de inmediato?
+       2088, // 1943, // 1734, // 1666,   //  31	 Su solicitud no fue atendida de inmediato porque
+       2089, // 1944, // 1735, // 1667,   //  32	Después de esperar
+       2090, // 1945, // 1736, // 1668,   //  33	¿La transacción se llegó a realizar de manera exitosa?  (Ojo esta tipo de transacciones no generan voucher, la confirmación es a través de un SMS)
+       2091, // 1946, // 1737, // 1669,   //  34	(SÓLO SI NO SE REALIZÓ LA TRANSACCIÓN) ¿Por qué no se pudo realizar la transacción?
+       2092, // 1947, // 1738, // 1670,   //  35	(SÓLO SI NO SE REALIZÓ LA TRANSACCIÓN) ¿Le dieron alguna solución para poder realizar la transacción?
+       2093, // 1948, // 1739, // 1671,   //  36	(BIM) Otras apreciaciones a comentar
+       2094, // 1949, // 1769,	//           37 ¿Tus comisiones te las pagan puntualmente?
+       2095, // 1950, // 1770,	//           38 ¿Me puedes referir a tu ejecutivo IBK?
+       2096, // 1951, // 1772,	//           39 ¿Existen ofertas para adelanto de sueldo o prestamos a travez de sus agentes?
 } ;
 
     public static int[] poll_id_palmera = new int[]{

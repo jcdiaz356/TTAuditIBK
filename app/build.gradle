@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.dataservicios.ttauditibk"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 10
-        versionName "1.0.9"
+        versionCode 13
+        versionName "1.0.12"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
