@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 26
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.dataservicios.ttauditibk"
-        minSdkVersion 19
-        targetSdkVersion 25
-        versionCode 13
-        versionName "1.0.12"
+        minSdkVersion 21
+        targetSdkVersion 26
+        versionCode 25
+        versionName "1.0.24"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -18,21 +18,22 @@ android {
         }
     }
     useLibrary 'org.apache.http.legacy'
-
     lintOptions {
         disable "ResourceType"
+    }
+    productFlavors {
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta5'
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.android.support:support-v4:21.0.3'
-    compile 'com.mcxiaoke.volley:library:1.0.6'
-    compile 'com.google.android.gms:play-services:6.1.71'
-    testCompile 'junit:junit:4.12'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.0-beta5'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.mcxiaoke.volley:library:1.0.6'
+    implementation 'com.google.android.gms:play-services:6.1.71'
+    testImplementation 'junit:junit:4.12'
 }

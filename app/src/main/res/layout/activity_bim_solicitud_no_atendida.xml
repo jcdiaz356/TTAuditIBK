@@ -24,31 +24,23 @@
                 android:text=" Su solicitud no fue atendida de inmediato porque"
                 android:id="@+id/tvPregunta" />
         </LinearLayout>
-
-
-
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:padding="5dp">
-
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp">
-
-
-
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
                     android:id="@+id/lyOpenClose">
-
                     <RadioGroup
                         android:id="@+id/rgOpt1"
                         android:layout_width="match_parent"
@@ -58,14 +50,12 @@
                         android:layout_above="@+id/fbplacename"
                         android:visibility="visible"
                         android:clickable="true">
-
                         <RadioButton
                             android:id="@+id/rbA1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:tag="a"
                             android:text="El encargado estaba ocupado" />
-
                         <RadioButton
                             android:id="@+id/rbB1"
                             android:layout_width="wrap_content"
@@ -73,9 +63,6 @@
                             android:text="Porque me indicó que no había sistema"
                             android:tag="b"
                             android:enabled="true" />
-
-
-
                         <RadioButton
                             android:id="@+id/rbC1"
                             android:layout_width="wrap_content"
@@ -98,17 +85,12 @@
                             android:id="@+id/etComent1" />
                     </RadioGroup>
                 </LinearLayout>
-
             </LinearLayout>
         </LinearLayout>
-
-
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="56dp">
-
-
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -116,13 +98,8 @@
                 android:id="@+id/btGuardar"
                 android:drawableRight="@drawable/ic_sync"
                 style="@style/BottonBase" />
-
         </LinearLayout>
-
     </LinearLayout>
-
-
-
 </ScrollView>
 
 

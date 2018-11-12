@@ -181,6 +181,7 @@ public class EvaluacionTransaccionOnce  extends Activity {
                     }
 
                 }
+                opciones= poll_id + opciones;
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MyActivity);
                 builder.setTitle("Guardar Encuesta");
@@ -209,7 +210,7 @@ public class EvaluacionTransaccionOnce  extends Activity {
                         pollDetail.setPublicity_id(0);
                         pollDetail.setCompany_id(GlobalConstant.company_id);
                         pollDetail.setCommentOptions(1);
-                        pollDetail.setSelectdOptions("");
+                        pollDetail.setSelectdOptions(opciones);
                         pollDetail.setSelectedOtionsComment(comentario.getText().toString());
                         pollDetail.setPriority("0");
 

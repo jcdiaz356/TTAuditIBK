@@ -431,7 +431,8 @@ public class informacion extends Activity {
                 argRuta.putInt("road_id", idRuta );
                 argRuta.putInt("audit_id",idAuditoria);
                 Intent intent;
-                intent = new Intent(MyActivity,InformacionComisionesActivity.class);
+//                intent = new Intent(MyActivity,InformacionComisionesActivity.class);
+                intent = new Intent(MyActivity, InformacionComentario.class);
                 intent.putExtras(argRuta);
                 startActivity(intent);
                 finish();

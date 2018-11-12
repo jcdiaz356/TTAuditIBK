@@ -96,7 +96,7 @@ public class AuditUtil {
         }
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos);
+        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
 
         InputStream in = new ByteArrayInputStream(bos.toByteArray());
 

@@ -134,6 +134,8 @@ public class EvaluacionTransaccionSiete  extends Activity {
 //                        result = 0;
 //                    }
 //                }
+
+                // COrreciòn bug de numero enter se convierte a string
                 tiempo = Integer.valueOf(String.valueOf(etTiempo.getText())) ;
                 if(tiempo<1) {
                     valoracionTiempo="Muy Rapida";
